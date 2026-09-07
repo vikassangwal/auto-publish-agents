@@ -349,6 +349,45 @@
         }
       }
     },
+    "/api/customer/handle-inquiry": {
+      "post": {
+        "summary": "Handle Customer Inquiry",
+        "description": "Called by Custom GPT when a customer or lead sends an email inquiry.\nSummarizes the email, identifies intent/budget, formulates a deal-closing reply,\nand returns a structured alert for chat and 1-click send URL.",
+        "operationId": "handle_customer_inquiry_api_customer_handle_inquiry_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerEmailInquiry"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DealAnalysisResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/publish": {
       "post": {
         "summary": "Publish Digital Product",
@@ -562,6 +601,144 @@
           "store"
         ],
         "title": "AddStoreResponse"
+      },
+      "CustomerEmailInquiry": {
+        "properties": {
+          "customer_email": {
+            "type": "string",
+            "title": "Customer Email",
+            "description": "Customer's email address"
+          },
+          "customer_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Name",
+            "description": "Customer's name",
+            "default": "Valued Customer"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject",
+            "description": "Subject of the incoming email"
+          },
+          "email_body": {
+            "type": "string",
+            "title": "Email Body",
+            "description": "Full text/content of the customer email"
+          },
+          "product_interest": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Interest",
+            "description": "Product or category the customer asked about",
+            "default": "Digital Templates Suite"
+          },
+          "target_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Price",
+            "description": "Standard price of the requested product",
+            "default": 29.0
+          },
+          "allow_auto_reply": {
+            "type": "boolean",
+            "title": "Allow Auto Reply",
+            "description": "Whether to generate and dispatch the deal-closing reply",
+            "default": true
+          },
+          "offered_discount_percent": {
+            "type": "integer",
+            "title": "Offered Discount Percent",
+            "description": "Discount percentage offered to close the deal instantly",
+            "default": 15
+          }
+        },
+        "type": "object",
+        "required": [
+          "customer_email",
+          "subject",
+          "email_body"
+        ],
+        "title": "CustomerEmailInquiry"
+      },
+      "DealAnalysisResult": {
+        "properties": {
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "customer_intent": {
+            "type": "string",
+            "title": "Customer Intent"
+          },
+          "deal_priority": {
+            "type": "string",
+            "title": "Deal Priority"
+          },
+          "estimated_deal_value": {
+            "type": "string",
+            "title": "Estimated Deal Value"
+          },
+          "key_pain_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Key Pain Points"
+          },
+          "suggested_strategy": {
+            "type": "string",
+            "title": "Suggested Strategy"
+          },
+          "closing_reply_subject": {
+            "type": "string",
+            "title": "Closing Reply Subject"
+          },
+          "closing_reply_body": {
+            "type": "string",
+            "title": "Closing Reply Body"
+          },
+          "instant_chat_alert": {
+            "type": "string",
+            "title": "Instant Chat Alert"
+          },
+          "one_click_send_url": {
+            "type": "string",
+            "title": "One Click Send Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "customer_intent",
+          "deal_priority",
+          "estimated_deal_value",
+          "key_pain_points",
+          "suggested_strategy",
+          "closing_reply_subject",
+          "closing_reply_body",
+          "instant_chat_alert",
+          "one_click_send_url"
+        ],
+        "title": "DealAnalysisResult"
       },
       "EmailSendRequest": {
         "properties": {

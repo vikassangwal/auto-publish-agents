@@ -20,6 +20,7 @@ from core.session_vault import SessionVault
 from core.email_dispatcher import EmailDispatcher
 from core.account_creator import AccountOnboardingEngine, OnboardingRequest, AccountCreationPlan
 from core.inbox_verifier import InboxVerificationReader
+from core.deal_closer import DealCloserEngine, CustomerEmailInquiry, DealAnalysisResult
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -264,6 +265,15 @@ def fetch_verification_otp(req: FetchOtpRequest):
         email_password=req.email_password
     )
     return FetchOtpResponse(**res)
+
+@app.post("/api/customer/handle-inquiry", response_model=DealAnalysisResult)
+def handle_customer_inquiry(inquiry: CustomerEmailInquiry):
+    """
+    Called by Custom GPT when a customer or lead sends an email inquiry.
+    Summarizes the email, identifies intent/budget, formulates a deal-closing reply,
+    and returns a structured alert for chat and 1-click send URL.
+    """
+    return DealCloserEngine.analyze_and_close_deal(inquiry)
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

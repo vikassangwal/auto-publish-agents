@@ -17,6 +17,7 @@ from core.store_reader import StoreReader
 from core.dynamic_store_registry import DynamicStoreRegistry
 from core.linkedin_promoter import LinkedInPromoter
 from core.session_vault import SessionVault
+from core.email_dispatcher import EmailDispatcher
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -101,6 +102,24 @@ class PublishResponse(BaseModel):
     platforms: List[PlatformStatusItem]
     markdown_report: str
     linkedin_promo: Optional[LinkedInPromoItem] = None
+
+class EmailSendRequest(BaseModel):
+    to_email: str = Field(..., description="Recipient email address (e.g. 'client@example.com')")
+    subject: str = Field(..., description="Subject line of the email")
+    body: Optional[str] = Field(None, description="Body content of the email or instructions for the pitch")
+    product_link: Optional[str] = Field(None, description="Optional link to digital product or store")
+    email_type: str = Field("promotional", description="Type: 'promotional', 'client_pitch', 'order_delivery', or 'custom'")
+    sender_email: Optional[str] = Field(None, description="Optional sender email (e.g. your_email@gmail.com)")
+    sender_password: Optional[str] = Field(None, description="Optional sender password or Gmail App Password")
+
+class EmailSendResponse(BaseModel):
+    status: str
+    sent_via_smtp: bool
+    to_email: str
+    subject: str
+    message: str
+    one_click_mailto_url: str
+    preview_text: str
 
 @app.get("/")
 @app.get("/api")
@@ -193,6 +212,22 @@ def sync_device_session(req: SessionSyncRequest):
         expires_in_days=req.expires_in_days,
         device_name=req.device_name
     )
+
+@app.post("/api/email/send", response_model=EmailSendResponse)
+def send_professional_email(req: EmailSendRequest):
+    """
+    Called by Custom GPT to compose and send professional emails (pitches, deliveries, promotions).
+    """
+    res = EmailDispatcher.compose_and_send(
+        to_email=req.to_email,
+        subject=req.subject,
+        body=req.body,
+        product_link=req.product_link,
+        email_type=req.email_type,
+        sender_email=req.sender_email,
+        sender_password=req.sender_password
+    )
+    return EmailSendResponse(**res)
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

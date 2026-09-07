@@ -232,6 +232,45 @@
         }
       }
     },
+    "/api/email/send": {
+      "post": {
+        "summary": "Send Professional Email",
+        "description": "Called by Custom GPT to compose and send professional emails (pitches, deliveries, promotions).",
+        "operationId": "send_professional_email_api_email_send_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailSendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSendResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/publish": {
       "post": {
         "summary": "Publish Digital Product",
@@ -358,6 +397,123 @@
           "store"
         ],
         "title": "AddStoreResponse"
+      },
+      "EmailSendRequest": {
+        "properties": {
+          "to_email": {
+            "type": "string",
+            "title": "To Email",
+            "description": "Recipient email address (e.g. 'client@example.com')"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject",
+            "description": "Subject line of the email"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body",
+            "description": "Body content of the email or instructions for the pitch"
+          },
+          "product_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Link",
+            "description": "Optional link to digital product or store"
+          },
+          "email_type": {
+            "type": "string",
+            "title": "Email Type",
+            "description": "Type: 'promotional', 'client_pitch', 'order_delivery', or 'custom'",
+            "default": "promotional"
+          },
+          "sender_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sender Email",
+            "description": "Optional sender email (e.g. your_email@gmail.com)"
+          },
+          "sender_password": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sender Password",
+            "description": "Optional sender password or Gmail App Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "to_email",
+          "subject"
+        ],
+        "title": "EmailSendRequest"
+      },
+      "EmailSendResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "sent_via_smtp": {
+            "type": "boolean",
+            "title": "Sent Via Smtp"
+          },
+          "to_email": {
+            "type": "string",
+            "title": "To Email"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "one_click_mailto_url": {
+            "type": "string",
+            "title": "One Click Mailto Url"
+          },
+          "preview_text": {
+            "type": "string",
+            "title": "Preview Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "sent_via_smtp",
+          "to_email",
+          "subject",
+          "message",
+          "one_click_mailto_url",
+          "preview_text"
+        ],
+        "title": "EmailSendResponse"
       },
       "HTTPValidationError": {
         "properties": {

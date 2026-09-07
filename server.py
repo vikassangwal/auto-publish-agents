@@ -172,15 +172,18 @@ class FetchOtpResponse(BaseModel):
     subject: Optional[str] = None
 
 @app.get("/")
-def health_check():
+def health_check(request: Request):
     return {
         "status": "online",
         "agent": "Digital Product Auto-Publisher Agent",
         "version": "2.0.0",
         "supported_platforms": 20,
         "docs_url": "/docs",
-        "openapi_url": "/openapi.json"
+        "openapi_url": "/openapi.json",
+        "request_path": request.scope.get("path"),
+        "raw_headers": dict(request.headers)
     }
+
 
 @app.get("/openapi.json", include_in_schema=False)
 def serve_openapi():

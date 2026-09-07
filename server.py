@@ -21,6 +21,7 @@ from core.email_dispatcher import EmailDispatcher
 from core.account_creator import AccountOnboardingEngine, OnboardingRequest, AccountCreationPlan
 from core.inbox_verifier import InboxVerificationReader
 from core.deal_closer import DealCloserEngine, CustomerEmailInquiry, DealAnalysisResult
+from core.portfolio_consultant import PortfolioConsultationEngine, CustomerConsultationRequest, ConsultationResponse
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -274,6 +275,14 @@ def handle_customer_inquiry(inquiry: CustomerEmailInquiry):
     and returns a structured alert for chat and 1-click send URL.
     """
     return DealCloserEngine.analyze_and_close_deal(inquiry)
+
+@app.post("/api/portfolio/consult", response_model=ConsultationResponse)
+def consult_customer_and_showcase_projects(req: CustomerConsultationRequest):
+    """
+    Called by Custom GPT to showcase user's projects, explain what the creator can build,
+    actively listen to customer needs, offer smart suggestions, and ask interactive follow-up questions.
+    """
+    return PortfolioConsultationEngine.consult_customer(req)
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

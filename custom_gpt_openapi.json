@@ -388,6 +388,45 @@
         }
       }
     },
+    "/api/portfolio/consult": {
+      "post": {
+        "summary": "Consult Customer And Showcase Projects",
+        "description": "Called by Custom GPT to showcase user's projects, explain what the creator can build,\nactively listen to customer needs, offer smart suggestions, and ask interactive follow-up questions.",
+        "operationId": "consult_customer_and_showcase_projects_api_portfolio_consult_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerConsultationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/publish": {
       "post": {
         "summary": "Publish Digital Product",
@@ -601,6 +640,88 @@
           "store"
         ],
         "title": "AddStoreResponse"
+      },
+      "ConsultationResponse": {
+        "properties": {
+          "active_listening_summary": {
+            "type": "string",
+            "title": "Active Listening Summary"
+          },
+          "recommended_projects": {
+            "items": {
+              "$ref": "#/components/schemas/ProductShowcaseItem"
+            },
+            "type": "array",
+            "title": "Recommended Projects"
+          },
+          "custom_build_options": {
+            "items": {
+              "$ref": "#/components/schemas/SkillCapability"
+            },
+            "type": "array",
+            "title": "Custom Build Options"
+          },
+          "smart_suggestion_for_customer": {
+            "type": "string",
+            "title": "Smart Suggestion For Customer"
+          },
+          "interactive_followup_question": {
+            "type": "string",
+            "title": "Interactive Followup Question"
+          },
+          "chat_presentation_card": {
+            "type": "string",
+            "title": "Chat Presentation Card"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active_listening_summary",
+          "recommended_projects",
+          "custom_build_options",
+          "smart_suggestion_for_customer",
+          "interactive_followup_question",
+          "chat_presentation_card"
+        ],
+        "title": "ConsultationResponse"
+      },
+      "CustomerConsultationRequest": {
+        "properties": {
+          "customer_query": {
+            "type": "string",
+            "title": "Customer Query",
+            "description": "What the customer is saying, asking, or looking for"
+          },
+          "customer_budget": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Budget",
+            "description": "Customer's budget range if mentioned"
+          },
+          "industry_or_niche": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry Or Niche",
+            "description": "Customer's industry (e.g., Real Estate, Crypto, Fitness, Agency, E-commerce)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "customer_query"
+        ],
+        "title": "CustomerConsultationRequest"
       },
       "CustomerEmailInquiry": {
         "properties": {
@@ -1080,6 +1201,52 @@
         ],
         "title": "PlatformStatusItem"
       },
+      "ProductShowcaseItem": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "price_usd": {
+            "type": "number",
+            "title": "Price Usd"
+          },
+          "price_inr": {
+            "type": "number",
+            "title": "Price Inr"
+          },
+          "key_features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Key Features"
+          },
+          "best_for": {
+            "type": "string",
+            "title": "Best For"
+          },
+          "live_url": {
+            "type": "string",
+            "title": "Live Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "category",
+          "price_usd",
+          "price_inr",
+          "key_features",
+          "best_for",
+          "live_url"
+        ],
+        "title": "ProductShowcaseItem"
+      },
       "PublishRequest": {
         "properties": {
           "prompt": {
@@ -1307,6 +1474,37 @@
           "auth_token_or_cookie"
         ],
         "title": "SessionSyncRequest"
+      },
+      "SkillCapability": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "what_i_can_build": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "What I Can Build"
+          },
+          "turnaround_time": {
+            "type": "string",
+            "title": "Turnaround Time"
+          },
+          "customization_level": {
+            "type": "string",
+            "title": "Customization Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "what_i_can_build",
+          "turnaround_time",
+          "customization_level"
+        ],
+        "title": "SkillCapability"
       },
       "ValidationError": {
         "properties": {

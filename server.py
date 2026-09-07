@@ -22,6 +22,13 @@ from core.account_creator import AccountOnboardingEngine, OnboardingRequest, Acc
 from core.inbox_verifier import InboxVerificationReader
 from core.deal_closer import DealCloserEngine, CustomerEmailInquiry, DealAnalysisResult
 from core.portfolio_consultant import PortfolioConsultationEngine, CustomerConsultationRequest, ConsultationResponse
+from core.research_and_safety import (
+    MarketResearchAndSafetyEngine,
+    LeadResearchRequest,
+    LeadResearchResponse,
+    OmnichannelMessageRequest,
+    OmnichannelReplyResponse
+)
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -283,6 +290,22 @@ def consult_customer_and_showcase_projects(req: CustomerConsultationRequest):
     actively listen to customer needs, offer smart suggestions, and ask interactive follow-up questions.
     """
     return PortfolioConsultationEngine.consult_customer(req)
+
+@app.post("/api/research/leads", response_model=LeadResearchResponse)
+def research_market_and_generate_tailored_emails(req: LeadResearchRequest):
+    """
+    Called by Custom GPT to research market niches, extract business pain points,
+    and write hyper-personalized cold outreach emails with built-in anti-ban rate limiting.
+    """
+    return MarketResearchAndSafetyEngine.research_market_and_leads(req)
+
+@app.post("/api/inbox/reply", response_model=OmnichannelReplyResponse)
+def reply_to_social_and_store_messages(req: OmnichannelMessageRequest):
+    """
+    Called by Custom GPT to handle incoming DMs and inquiries from LinkedIn, Etsy, Fiverr, Upwork, etc.
+    Generates human-like, non-spam replies with anti-block safety rules.
+    """
+    return MarketResearchAndSafetyEngine.handle_omnichannel_inbox_message(req)
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

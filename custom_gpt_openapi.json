@@ -427,6 +427,84 @@
         }
       }
     },
+    "/api/research/leads": {
+      "post": {
+        "summary": "Research Market And Generate Tailored Emails",
+        "description": "Called by Custom GPT to research market niches, extract business pain points,\nand write hyper-personalized cold outreach emails with built-in anti-ban rate limiting.",
+        "operationId": "research_market_and_generate_tailored_emails_api_research_leads_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeadResearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadResearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox/reply": {
+      "post": {
+        "summary": "Reply To Social And Store Messages",
+        "description": "Called by Custom GPT to handle incoming DMs and inquiries from LinkedIn, Etsy, Fiverr, Upwork, etc.\nGenerates human-like, non-spam replies with anti-block safety rules.",
+        "operationId": "reply_to_social_and_store_messages_api_inbox_reply_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OmnichannelMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OmnichannelReplyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/publish": {
       "post": {
         "summary": "Publish Digital Product",
@@ -1095,6 +1173,88 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "LeadResearchRequest": {
+        "properties": {
+          "business_type_or_niche": {
+            "type": "string",
+            "title": "Business Type Or Niche",
+            "description": "Target industry, e.g. 'Real Estate Brokers in Mumbai', 'Dentists in Delhi', 'Digital Marketing Agencies'"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location",
+            "description": "City, region, or country to research",
+            "default": "India"
+          },
+          "service_or_product_to_pitch": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Or Product To Pitch",
+            "description": "Digital asset or service to offer",
+            "default": "Automated Financial & CRM Dashboard"
+          },
+          "max_leads": {
+            "type": "integer",
+            "title": "Max Leads",
+            "description": "Number of high-potential leads to research",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "required": [
+          "business_type_or_niche"
+        ],
+        "title": "LeadResearchRequest"
+      },
+      "LeadResearchResponse": {
+        "properties": {
+          "niche_analyzed": {
+            "type": "string",
+            "title": "Niche Analyzed"
+          },
+          "market_demand_summary": {
+            "type": "string",
+            "title": "Market Demand Summary"
+          },
+          "total_leads_found": {
+            "type": "integer",
+            "title": "Total Leads Found"
+          },
+          "anti_ban_compliance": {
+            "type": "string",
+            "title": "Anti Ban Compliance"
+          },
+          "leads": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchedLead"
+            },
+            "type": "array",
+            "title": "Leads"
+          }
+        },
+        "type": "object",
+        "required": [
+          "niche_analyzed",
+          "market_demand_summary",
+          "total_leads_found",
+          "anti_ban_compliance",
+          "leads"
+        ],
+        "title": "LeadResearchResponse"
+      },
       "LinkedInPromoItem": {
         "properties": {
           "headline": {
@@ -1117,6 +1277,90 @@
           "one_click_share_url"
         ],
         "title": "LinkedInPromoItem"
+      },
+      "OmnichannelMessageRequest": {
+        "properties": {
+          "platform": {
+            "type": "string",
+            "title": "Platform",
+            "description": "Platform where message arrived: 'LinkedIn', 'Etsy', 'Fiverr', 'Upwork', 'Payhip', 'Instagram'"
+          },
+          "sender_name": {
+            "type": "string",
+            "title": "Sender Name",
+            "description": "Name of the person who messaged"
+          },
+          "incoming_message": {
+            "type": "string",
+            "title": "Incoming Message",
+            "description": "The message received from the customer/lead"
+          },
+          "context_or_intent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Or Intent",
+            "description": "Additional context if any"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platform",
+          "sender_name",
+          "incoming_message"
+        ],
+        "title": "OmnichannelMessageRequest"
+      },
+      "OmnichannelReplyResponse": {
+        "properties": {
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "sender_name": {
+            "type": "string",
+            "title": "Sender Name"
+          },
+          "detected_intent": {
+            "type": "string",
+            "title": "Detected Intent"
+          },
+          "anti_ban_safety_score": {
+            "type": "string",
+            "title": "Anti Ban Safety Score"
+          },
+          "safe_human_reply_copy": {
+            "type": "string",
+            "title": "Safe Human Reply Copy"
+          },
+          "one_click_reply_action": {
+            "type": "string",
+            "title": "One Click Reply Action"
+          },
+          "action_guidelines_to_avoid_block": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Action Guidelines To Avoid Block"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platform",
+          "sender_name",
+          "detected_intent",
+          "anti_ban_safety_score",
+          "safe_human_reply_copy",
+          "one_click_reply_action",
+          "action_guidelines_to_avoid_block"
+        ],
+        "title": "OmnichannelReplyResponse"
       },
       "OnboardingRequest": {
         "properties": {
@@ -1398,6 +1642,49 @@
           "markdown_report"
         ],
         "title": "PublishResponse"
+      },
+      "ResearchedLead": {
+        "properties": {
+          "business_name": {
+            "type": "string",
+            "title": "Business Name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "detected_pain_point": {
+            "type": "string",
+            "title": "Detected Pain Point"
+          },
+          "why_they_need_it": {
+            "type": "string",
+            "title": "Why They Need It"
+          },
+          "personalized_subject": {
+            "type": "string",
+            "title": "Personalized Subject"
+          },
+          "tailored_outreach_email": {
+            "type": "string",
+            "title": "Tailored Outreach Email"
+          },
+          "anti_ban_warmup_delay_seconds": {
+            "type": "integer",
+            "title": "Anti Ban Warmup Delay Seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "business_name",
+          "category",
+          "detected_pain_point",
+          "why_they_need_it",
+          "personalized_subject",
+          "tailored_outreach_email",
+          "anti_ban_warmup_delay_seconds"
+        ],
+        "title": "ResearchedLead"
       },
       "SessionStatusResponse": {
         "properties": {

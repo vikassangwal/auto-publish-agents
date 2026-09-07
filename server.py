@@ -19,6 +19,7 @@ from core.linkedin_promoter import LinkedInPromoter
 from core.session_vault import SessionVault
 from core.email_dispatcher import EmailDispatcher
 from core.account_creator import AccountOnboardingEngine, OnboardingRequest, AccountCreationPlan
+from core.inbox_verifier import InboxVerificationReader
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -121,6 +122,19 @@ class EmailSendResponse(BaseModel):
     message: str
     one_click_mailto_url: str
     preview_text: str
+
+class FetchOtpRequest(BaseModel):
+    platform_name: Optional[str] = Field(None, description="Optional platform filter, e.g. 'Gumroad', 'Payhip', 'Etsy'")
+    email_user: Optional[str] = Field(None, description="Email address to check for OTP")
+    email_password: Optional[str] = Field(None, description="Google App Password (16 characters)")
+
+class FetchOtpResponse(BaseModel):
+    status: str
+    message: str
+    otp: Optional[str] = None
+    verification_link: Optional[str] = None
+    sender: Optional[str] = None
+    subject: Optional[str] = None
 
 @app.get("/")
 @app.get("/api")
@@ -237,6 +251,19 @@ def setup_store_accounts(req: OnboardingRequest):
     Protects user KYC, banking, and passwords while setting up seller accounts.
     """
     return AccountOnboardingEngine.create_onboarding_plan(req)
+
+@app.post("/api/inbox/fetch-otp", response_model=FetchOtpResponse)
+def fetch_verification_otp(req: FetchOtpRequest):
+    """
+    Called by Custom GPT to automatically read recent unread OTP or activation links
+    from inbox to complete account verification with zero manual effort.
+    """
+    res = InboxVerificationReader.fetch_latest_verification(
+        sender_filter=req.platform_name,
+        email_user=req.email_user,
+        email_password=req.email_password
+    )
+    return FetchOtpResponse(**res)
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

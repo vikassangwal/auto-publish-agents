@@ -310,6 +310,45 @@
         }
       }
     },
+    "/api/inbox/fetch-otp": {
+      "post": {
+        "summary": "Fetch Verification Otp",
+        "description": "Called by Custom GPT to automatically read recent unread OTP or activation links\nfrom inbox to complete account verification with zero manual effort.",
+        "operationId": "fetch_verification_otp_api_inbox_fetch_otp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FetchOtpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FetchOtpResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/publish": {
       "post": {
         "summary": "Publish Digital Product",
@@ -640,6 +679,110 @@
           "preview_text"
         ],
         "title": "EmailSendResponse"
+      },
+      "FetchOtpRequest": {
+        "properties": {
+          "platform_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform Name",
+            "description": "Optional platform filter, e.g. 'Gumroad', 'Payhip', 'Etsy'"
+          },
+          "email_user": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email User",
+            "description": "Email address to check for OTP"
+          },
+          "email_password": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Password",
+            "description": "Google App Password (16 characters)"
+          }
+        },
+        "type": "object",
+        "title": "FetchOtpRequest"
+      },
+      "FetchOtpResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "otp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Otp"
+          },
+          "verification_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification Link"
+          },
+          "sender": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sender"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "title": "FetchOtpResponse"
       },
       "HTTPValidationError": {
         "properties": {

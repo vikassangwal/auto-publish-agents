@@ -18,6 +18,7 @@ from core.dynamic_store_registry import DynamicStoreRegistry
 from core.linkedin_promoter import LinkedInPromoter
 from core.session_vault import SessionVault
 from core.email_dispatcher import EmailDispatcher
+from core.account_creator import AccountOnboardingEngine, OnboardingRequest, AccountCreationPlan
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -228,6 +229,14 @@ def send_professional_email(req: EmailSendRequest):
         sender_password=req.sender_password
     )
     return EmailSendResponse(**res)
+
+@app.post("/api/accounts/setup", response_model=AccountCreationPlan)
+def setup_store_accounts(req: OnboardingRequest):
+    """
+    Called by Custom GPT to orchestrate privacy-first account creation across platforms.
+    Protects user KYC, banking, and passwords while setting up seller accounts.
+    """
+    return AccountOnboardingEngine.create_onboarding_plan(req)
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

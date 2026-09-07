@@ -271,6 +271,45 @@
         }
       }
     },
+    "/api/accounts/setup": {
+      "post": {
+        "summary": "Setup Store Accounts",
+        "description": "Called by Custom GPT to orchestrate privacy-first account creation across platforms.\nProtects user KYC, banking, and passwords while setting up seller accounts.",
+        "operationId": "setup_store_accounts_api_accounts_setup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnboardingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountCreationPlan"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/publish": {
       "post": {
         "summary": "Publish Digital Product",
@@ -313,6 +352,93 @@
   },
   "components": {
     "schemas": {
+      "AccountCreationPlan": {
+        "properties": {
+          "brand_name": {
+            "type": "string",
+            "title": "Brand Name"
+          },
+          "contact_email": {
+            "type": "string",
+            "title": "Contact Email"
+          },
+          "total_platforms": {
+            "type": "integer",
+            "title": "Total Platforms"
+          },
+          "secure_master_seed_hint": {
+            "type": "string",
+            "title": "Secure Master Seed Hint"
+          },
+          "privacy_policy_compliance": {
+            "type": "string",
+            "title": "Privacy Policy Compliance"
+          },
+          "platform_plans": {
+            "items": {
+              "$ref": "#/components/schemas/AccountSetupInstruction"
+            },
+            "type": "array",
+            "title": "Platform Plans"
+          }
+        },
+        "type": "object",
+        "required": [
+          "brand_name",
+          "contact_email",
+          "total_platforms",
+          "secure_master_seed_hint",
+          "privacy_policy_compliance",
+          "platform_plans"
+        ],
+        "title": "AccountCreationPlan"
+      },
+      "AccountSetupInstruction": {
+        "properties": {
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "signup_url": {
+            "type": "string",
+            "title": "Signup Url"
+          },
+          "recommended_username": {
+            "type": "string",
+            "title": "Recommended Username"
+          },
+          "suggested_store_name": {
+            "type": "string",
+            "title": "Suggested Store Name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "privacy_checklist": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Privacy Checklist"
+          },
+          "human_action_required": {
+            "type": "string",
+            "title": "Human Action Required"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platform",
+          "signup_url",
+          "recommended_username",
+          "suggested_store_name",
+          "category",
+          "privacy_checklist",
+          "human_action_required"
+        ],
+        "title": "AccountSetupInstruction"
+      },
       "AddStoreRequest": {
         "properties": {
           "name": {
@@ -550,6 +676,54 @@
           "one_click_share_url"
         ],
         "title": "LinkedInPromoItem"
+      },
+      "OnboardingRequest": {
+        "properties": {
+          "brand_name": {
+            "type": "string",
+            "title": "Brand Name",
+            "description": "Public store or creator brand name (e.g. 'Zenith Templates')"
+          },
+          "contact_email": {
+            "type": "string",
+            "title": "Contact Email",
+            "description": "Business contact email for account creation"
+          },
+          "target_platforms": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Platforms",
+            "description": "List of platforms to set up accounts for",
+            "default": [
+              "Gumroad",
+              "Payhip",
+              "Lemon Squeezy",
+              "Whop",
+              "Sellfy"
+            ]
+          },
+          "store_category": {
+            "type": "string",
+            "title": "Store Category",
+            "description": "Niche / Category for the store",
+            "default": "Digital Products & Templates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "brand_name",
+          "contact_email"
+        ],
+        "title": "OnboardingRequest"
       },
       "PlatformStatusItem": {
         "properties": {

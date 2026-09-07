@@ -43,21 +43,42 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    schema_file = os.path.join(os.path.dirname(__file__), "custom_gpt_openapi.json")
+    if os.path.exists(schema_file):
+        try:
+            with open(schema_file, "r", encoding="utf-8") as f:
+                app.openapi_schema = json.load(f)
+                return app.openapi_schema
+        except Exception:
+            pass
+    from fastapi.openapi.utils import get_openapi
+    app.openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+        servers=[{"url": "https://auto-publish-agents.vercel.app"}]
+    )
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
 @app.middleware("http")
 async def vercel_path_normalizer(request: Request, call_next):
     """
     Normalizes URLs when deployed behind Vercel rewrites.
-    Maps /api/index.py or rewritten paths back to their true FastAPI routes.
+    Only resets when path literally points to the serverless function index.
     """
-    matched = request.headers.get("x-matched-path")
-    if matched:
-        request.scope["path"] = matched
-    elif request.scope.get("path") in ["/api/index.py", "/api/index", "/api"]:
+    path = request.scope.get("path", "")
+    if path in ["/api/index.py", "/api/index", "/api"]:
         request.scope["path"] = "/"
-    elif request.scope.get("path", "").startswith("/api/index.py/"):
-        request.scope["path"] = request.scope["path"][len("/api/index.py"):]
-
+    elif path.startswith("/api/index.py/"):
+        request.scope["path"] = path[len("/api/index.py"):]
     return await call_next(request)
+
 
 class AddStoreRequest(BaseModel):
     name: str = Field(..., description="Display name for the website or store (e.g. 'My WordPress Store')")
@@ -151,9 +172,6 @@ class FetchOtpResponse(BaseModel):
     subject: Optional[str] = None
 
 @app.get("/")
-@app.get("/api")
-@app.get("/api/index")
-@app.get("/api/index.py")
 def health_check():
     return {
         "status": "online",
@@ -163,6 +181,19 @@ def health_check():
         "docs_url": "/docs",
         "openapi_url": "/openapi.json"
     }
+
+@app.get("/openapi.json", include_in_schema=False)
+def serve_openapi():
+    return app.openapi()
+
+@app.get("/api/debug-scope", include_in_schema=False)
+def debug_scope(request: Request):
+    return {
+        "scope_path": request.scope.get("path"),
+        "url_path": request.url.path,
+        "headers": dict(request.headers)
+    }
+
 
 @app.get("/api/platforms")
 def list_platforms():

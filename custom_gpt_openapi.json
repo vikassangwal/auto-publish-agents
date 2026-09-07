@@ -6,6 +6,54 @@
     "version": "2.0.0"
   },
   "paths": {
+    "/api/index.py": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_api_index_py_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/index": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_api_index_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_api_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Health Check",
@@ -26,6 +74,57 @@
       "get": {
         "summary": "List Platforms",
         "operationId": "list_platforms_api_platforms_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics": {
+      "get": {
+        "summary": "Get Store Analytics",
+        "description": "Returns revenue, sales count, and order intelligence across connected stores for Custom GPT.",
+        "operationId": "get_store_analytics_api_analytics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "summary": "List Store Products",
+        "description": "Lists all active and draft products across Gumroad, Etsy, WooCommerce, and Shopify.",
+        "operationId": "list_store_products_api_products_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stores": {
+      "get": {
+        "summary": "Get Store Connections",
+        "description": "Checks live connection status of all 20 marketplaces and personal websites.",
+        "operationId": "get_store_connections_api_stores_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -256,5 +355,10 @@
         "title": "ValidationError"
       }
     }
-  }
+  },
+  "servers": [
+    {
+      "url": "https://auto-publish-agents.vercel.app"
+    }
+  ]
 }

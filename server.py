@@ -13,6 +13,7 @@ from core.product_generator import ProductGenerator
 from core.ingest import ProductIngestionEngine
 from core.publisher import PublisherOrchestrator
 from core.reporter import PublishReporter
+from core.store_reader import StoreReader
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -85,6 +86,30 @@ def list_platforms():
         ],
         "multi_site_support": "10 to 50 personal websites via websites.json (WooCommerce, Shopify, Webhooks)"
     }
+
+@app.get("/api/analytics")
+def get_store_analytics():
+    """
+    Returns revenue, sales count, and order intelligence across connected stores for Custom GPT.
+    """
+    reader = StoreReader()
+    return reader.get_analytics()
+
+@app.get("/api/products")
+def list_store_products():
+    """
+    Lists all active and draft products across Gumroad, Etsy, WooCommerce, and Shopify.
+    """
+    reader = StoreReader()
+    return {"products": reader.list_all_products()}
+
+@app.get("/api/stores")
+def get_store_connections():
+    """
+    Checks live connection status of all 20 marketplaces and personal websites.
+    """
+    reader = StoreReader()
+    return {"stores": reader.get_store_connections()}
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

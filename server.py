@@ -70,14 +70,19 @@ app.openapi = custom_openapi
 async def vercel_path_normalizer(request: Request, call_next):
     """
     Normalizes URLs when deployed behind Vercel rewrites.
-    Only resets when path literally points to the serverless function index.
+    Recovers the true request path passed via __path query parameter.
     """
-    path = request.scope.get("path", "")
-    if path in ["/api/index.py", "/api/index", "/api"]:
+    path_param = request.query_params.get("__path")
+    if path_param:
+        clean_path = "/" + path_param.lstrip("/")
+        request.scope["path"] = clean_path
+    elif request.scope.get("path") in ["/api/index.py", "/api/index", "/api"]:
         request.scope["path"] = "/"
-    elif path.startswith("/api/index.py/"):
-        request.scope["path"] = path[len("/api/index.py"):]
+    elif request.scope.get("path", "").startswith("/api/index.py/"):
+        request.scope["path"] = request.scope["path"][len("/api/index.py"):]
+
     return await call_next(request)
+
 
 
 class AddStoreRequest(BaseModel):
@@ -172,17 +177,16 @@ class FetchOtpResponse(BaseModel):
     subject: Optional[str] = None
 
 @app.get("/")
-def health_check(request: Request):
+def health_check():
     return {
         "status": "online",
         "agent": "Digital Product Auto-Publisher Agent",
         "version": "2.0.0",
         "supported_platforms": 20,
         "docs_url": "/docs",
-        "openapi_url": "/openapi.json",
-        "request_path": request.scope.get("path"),
-        "raw_headers": dict(request.headers)
+        "openapi_url": "/openapi.json"
     }
+
 
 
 @app.get("/openapi.json", include_in_schema=False)

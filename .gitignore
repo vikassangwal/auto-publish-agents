@@ -1,0 +1,11 @@
+# Environment & Credentials
+.env
+*.key
+*.pem
+__pycache__/
+*.pyc
+storage/sessions/
+storage/browser_profile/
+storage/generated_products/
+output/
+*.log

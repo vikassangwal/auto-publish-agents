@@ -1,0 +1,64 @@
+[
+  {
+    "id": "site_01",
+    "name": "Primary Wealth Portal (WooCommerce)",
+    "type": "woocommerce",
+    "url": "https://myfinancesite1.com",
+    "api_endpoint": "https://myfinancesite1.com/wp-json/wc/v3/products",
+    "auth_type": "basic",
+    "credentials": {
+      "consumer_key": "ck_xxxxxxxxxxxxxxxxxxxxxxxx",
+      "consumer_secret": "cs_xxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    "enabled": true
+  },
+  {
+    "id": "site_02",
+    "name": "Excel Templates Direct (Shopify)",
+    "type": "shopify",
+    "url": "https://myexceltemplates.myshopify.com",
+    "api_endpoint": "https://myexceltemplates.myshopify.com/admin/api/2024-01/products.json",
+    "auth_type": "bearer",
+    "credentials": {
+      "access_token": "shpat_xxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    "enabled": true
+  },
+  {
+    "id": "site_03",
+    "name": "Custom Solopreneur Hub (REST Webhook)",
+    "type": "custom_webhook",
+    "url": "https://solopreneurhub.com",
+    "api_endpoint": "https://solopreneurhub.com/api/v1/products/upload",
+    "auth_type": "bearer",
+    "credentials": {
+      "access_token": "sec_custom_token_12345"
+    },
+    "enabled": true
+  },
+  {
+    "id": "site_04",
+    "name": "India Finance Store (WordPress / EDD)",
+    "type": "easy_digital_downloads",
+    "url": "https://indiawealthstore.in",
+    "api_endpoint": "https://indiawealthstore.in/wp-json/edd/v1/products",
+    "auth_type": "basic",
+    "credentials": {
+      "api_key": "edd_key_xxxx",
+      "token": "edd_token_xxxx"
+    },
+    "enabled": true
+  },
+  {
+    "id": "site_05",
+    "name": "Member Hub / Ghost CMS",
+    "type": "ghost",
+    "url": "https://investorweekly.io",
+    "api_endpoint": "https://investorweekly.io/ghost/api/admin/posts/",
+    "auth_type": "bearer",
+    "credentials": {
+      "access_token": "ghost_admin_token"
+    },
+    "enabled": false
+  }
+]

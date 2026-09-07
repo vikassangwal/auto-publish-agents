@@ -1,0 +1,260 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Digital Product Auto-Publisher Agent API",
+    "description": "Autonomous Agent API to create and publish digital products to 20+ marketplaces & websites from Custom GPTs.",
+    "version": "2.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/platforms": {
+      "get": {
+        "summary": "List Platforms",
+        "operationId": "list_platforms_api_platforms_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/publish": {
+      "post": {
+        "summary": "Publish Digital Product",
+        "description": "Called by Custom GPT to build and publish a digital product to all platforms.",
+        "operationId": "publish_digital_product_api_publish_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "PlatformStatusItem": {
+        "properties": {
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platform",
+          "status",
+          "url",
+          "message"
+        ],
+        "title": "PlatformStatusItem"
+      },
+      "PublishRequest": {
+        "properties": {
+          "prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt",
+            "description": "Idea/topic for the digital product to generate (e.g. 'Gym Fitness & Diet Tracker')"
+          },
+          "product_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product File",
+            "description": "Existing file name in workspace if publishing an already created file"
+          },
+          "format_type": {
+            "type": "string",
+            "title": "Format Type",
+            "description": "Type of product: 'spreadsheet', 'document', or 'code'",
+            "default": "spreadsheet"
+          },
+          "no_api": {
+            "type": "boolean",
+            "title": "No Api",
+            "description": "Whether to use Zero-API browser automation (default True)",
+            "default": true
+          },
+          "auto_approve": {
+            "type": "boolean",
+            "title": "Auto Approve",
+            "description": "Whether to auto-approve pre-publish checklist",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "PublishRequest"
+      },
+      "PublishResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "product_title": {
+            "type": "string",
+            "title": "Product Title"
+          },
+          "format_category": {
+            "type": "string",
+            "title": "Format Category"
+          },
+          "bundle_zip": {
+            "type": "string",
+            "title": "Bundle Zip"
+          },
+          "total_platforms": {
+            "type": "integer",
+            "title": "Total Platforms"
+          },
+          "platforms": {
+            "items": {
+              "$ref": "#/components/schemas/PlatformStatusItem"
+            },
+            "type": "array",
+            "title": "Platforms"
+          },
+          "markdown_report": {
+            "type": "string",
+            "title": "Markdown Report"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "product_title",
+          "format_category",
+          "bundle_zip",
+          "total_platforms",
+          "platforms",
+          "markdown_report"
+        ],
+        "title": "PublishResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

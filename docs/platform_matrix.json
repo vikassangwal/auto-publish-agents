@@ -1,0 +1,98 @@
+[
+  {
+    "platform": "Gumroad",
+    "fit": "high",
+    "reason": "Digital downloads and creator products",
+    "publishing_mode": "api_or_browser"
+  },
+  {
+    "platform": "Payhip",
+    "fit": "high",
+    "reason": "Digital downloads",
+    "publishing_mode": "api_or_browser"
+  },
+  {
+    "platform": "Sellfy",
+    "fit": "high",
+    "reason": "Digital products",
+    "publishing_mode": "api_or_browser"
+  },
+  {
+    "platform": "Lemon Squeezy",
+    "fit": "high",
+    "reason": "Digital products/software",
+    "publishing_mode": "api"
+  },
+  {
+    "platform": "Whop",
+    "fit": "high",
+    "reason": "Digital products and memberships",
+    "publishing_mode": "api_or_browser"
+  },
+  {
+    "platform": "Etsy",
+    "fit": "medium",
+    "reason": "Digital templates/downloadables",
+    "publishing_mode": "browser_or_review"
+  },
+  {
+    "platform": "Creative Market",
+    "fit": "medium",
+    "reason": "Design assets/templates",
+    "publishing_mode": "browser_or_review"
+  },
+  {
+    "platform": "Product Hunt",
+    "fit": "medium",
+    "reason": "Product launch/discovery",
+    "publishing_mode": "launch_workflow"
+  },
+  {
+    "platform": "BetaList",
+    "fit": "medium",
+    "reason": "Startup/product discovery",
+    "publishing_mode": "submission"
+  },
+  {
+    "platform": "CodeCanyon",
+    "fit": "low",
+    "reason": "Code/software marketplace; not a natural fit for this XLSX",
+    "publishing_mode": "review"
+  },
+  {
+    "platform": "Fiverr",
+    "fit": "low",
+    "reason": "Service marketplace; use only if sold as a service",
+    "publishing_mode": "review"
+  },
+  {
+    "platform": "Upwork",
+    "fit": "low",
+    "reason": "Freelance service marketplace",
+    "publishing_mode": "review"
+  },
+  {
+    "platform": "Amazon KDP",
+    "fit": "low",
+    "reason": "Books/eBooks; not a direct fit for this XLSX",
+    "publishing_mode": "review"
+  },
+  {
+    "platform": "Podia",
+    "fit": "low",
+    "reason": "Courses/memberships/digital products",
+    "publishing_mode": "review"
+  },
+  {
+    "platform": "Graphy",
+    "fit": "low",
+    "reason": "Education/course platform",
+    "publishing_mode": "review"
+  },
+  {
+    "platform": "TagMango",
+    "fit": "low",
+    "reason": "Creator/education products",
+    "publishing_mode": "review"
+  }
+]

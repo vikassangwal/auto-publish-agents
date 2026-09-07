@@ -78,11 +78,10 @@ def publish_digital_product(req: PublishRequest):
         elif req.product_file:
             product_path = Path(req.product_file)
             if not product_path.is_absolute():
-                candidate = Path(r"C:\Users\HP\.gemini\antigravity\scratch\portfolio_tracker") / req.product_file
-                product_path = candidate if candidate.exists() else Path(req.product_file)
+                repo_file = Path(__file__).resolve().parent / req.product_file
+                product_path = repo_file if repo_file.exists() else Path(req.product_file)
         else:
-            default_path = Path(r"C:\Users\HP\.gemini\antigravity\scratch\portfolio_tracker\Ultimate_Investment_Portfolio_Tracker_Pro.xlsx")
-            product_path = default_path
+            product_path = Path(__file__).resolve().parent / "Ultimate_Investment_Portfolio_Tracker_Pro.xlsx"
 
         if not product_path.exists():
             raise HTTPException(status_code=404, detail=f"File not found: {product_path}")
@@ -101,7 +100,18 @@ def publish_digital_product(req: PublishRequest):
         results = orchestrator.run()
 
         # 4. Generate Report
-        out_dir = Path(__file__).resolve().parent / "output"
+        if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+            import tempfile
+            out_dir = Path(tempfile.gettempdir()) / "output"
+        else:
+            out_dir = Path(__file__).resolve().parent / "output"
+        try:
+            out_dir.mkdir(parents=True, exist_ok=True)
+        except (OSError, PermissionError):
+            import tempfile
+            out_dir = Path(tempfile.gettempdir()) / "output"
+            out_dir.mkdir(parents=True, exist_ok=True)
+
         reporter = PublishReporter(product=product_meta, results=results, output_dir=str(out_dir))
         md_report = reporter.generate_report()
 

@@ -12,8 +12,16 @@ from core.models import ListingPayload, PublishResult, JobStatus, ProductMetadat
 class ZeroApiBrowserRunner:
     def __init__(self, headless: bool = False, profile_dir: Optional[str] = None):
         self.headless = headless
-        self.profile_dir = profile_dir or str(Path(__file__).resolve().parent.parent / "storage" / "browser_profile")
-        os.makedirs(self.profile_dir, exist_ok=True)
+        if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+            import tempfile
+            default_dir = str(Path(tempfile.gettempdir()) / "browser_profile")
+        else:
+            default_dir = str(Path(__file__).resolve().parent.parent / "storage" / "browser_profile")
+        self.profile_dir = profile_dir or default_dir
+        try:
+            os.makedirs(self.profile_dir, exist_ok=True)
+        except (OSError, PermissionError):
+            pass
 
     def publish_via_browser(self, platform_name: str, payload: ListingPayload) -> PublishResult:
         """

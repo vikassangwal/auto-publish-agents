@@ -16,8 +16,19 @@ from core.ai_brain import AIBrain
 
 class ProductGenerator:
     def __init__(self, output_dir: Optional[str] = None):
-        self.output_dir = Path(output_dir or (Path(__file__).resolve().parent.parent / "storage" / "generated_products"))
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+        if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+            import tempfile
+            default_dir = Path(tempfile.gettempdir()) / "generated_products"
+        else:
+            default_dir = Path(__file__).resolve().parent.parent / "storage" / "generated_products"
+        
+        self.output_dir = Path(output_dir or default_dir)
+        try:
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+        except (OSError, PermissionError):
+            import tempfile
+            self.output_dir = Path(tempfile.gettempdir()) / "generated_products"
+            self.output_dir.mkdir(parents=True, exist_ok=True)
         self.brain = AIBrain()
 
     def generate_product(self, prompt: str, asset_type: str = "spreadsheet") -> Path:

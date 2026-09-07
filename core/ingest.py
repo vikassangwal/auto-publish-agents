@@ -372,6 +372,14 @@ class ProductIngestionEngine:
     def _ensure_bundle(self) -> str:
         bundle_zip = self.path.parent / f"{self.path.stem}_Bundle.zip"
         if not bundle_zip.exists():
-            with zipfile.ZipFile(bundle_zip, "w", zipfile.ZIP_DEFLATED) as zf:
-                zf.write(self.path, self.path.name)
+            try:
+                with zipfile.ZipFile(bundle_zip, "w", zipfile.ZIP_DEFLATED) as zf:
+                    zf.write(self.path, self.path.name)
+            except (OSError, PermissionError):
+                import tempfile
+                tmp_zip = Path(tempfile.gettempdir()) / f"{self.path.stem}_Bundle.zip"
+                if not tmp_zip.exists():
+                    with zipfile.ZipFile(tmp_zip, "w", zipfile.ZIP_DEFLATED) as zf:
+                        zf.write(self.path, self.path.name)
+                return str(tmp_zip)
         return str(bundle_zip)

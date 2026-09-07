@@ -4,7 +4,11 @@ Safely loads .env without leaking secrets into logs or console stdout.
 """
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv(*args, **kwargs):
+        pass
 
 # Search locations for .env
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

@@ -505,6 +505,45 @@
         }
       }
     },
+    "/api/agency/pitch": {
+      "post": {
+        "summary": "Pitch Multi Domain Services And Research",
+        "description": "Called by Custom GPT to pitch Web Design, Data Analytics, AI Agents, or Spreadsheets,\nand discover high-ticket client opportunities using Google Maps and web research.",
+        "operationId": "pitch_multi_domain_services_and_research_api_agency_pitch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OmniDomainResearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OmniDomainResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/publish": {
       "post": {
         "summary": "Publish Digital Product",
@@ -939,6 +978,42 @@
         ],
         "title": "DealAnalysisResult"
       },
+      "DomainCapabilityDetail": {
+        "properties": {
+          "domain_name": {
+            "type": "string",
+            "title": "Domain Name"
+          },
+          "deliverables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Deliverables"
+          },
+          "typical_pricing": {
+            "type": "string",
+            "title": "Typical Pricing"
+          },
+          "target_clients": {
+            "type": "string",
+            "title": "Target Clients"
+          },
+          "client_pain_point_solved": {
+            "type": "string",
+            "title": "Client Pain Point Solved"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain_name",
+          "deliverables",
+          "typical_pricing",
+          "target_clients",
+          "client_pain_point_solved"
+        ],
+        "title": "DomainCapabilityDetail"
+      },
       "EmailSendRequest": {
         "properties": {
           "to_email": {
@@ -1277,6 +1352,85 @@
           "one_click_share_url"
         ],
         "title": "LinkedInPromoItem"
+      },
+      "OmniDomainResearchRequest": {
+        "properties": {
+          "service_domain": {
+            "type": "string",
+            "title": "Service Domain",
+            "description": "Domain to research/pitch: 'web_design', 'data_analytics', 'ai_agents', 'spreadsheets', or 'all'"
+          },
+          "target_location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Location",
+            "description": "City, region, or global market (e.g., 'Delhi', 'Bangalore', 'Dubai', 'USA')",
+            "default": "India"
+          },
+          "target_business_niche": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Business Niche",
+            "description": "Industry niche (e.g., 'Restaurants', 'Clinics', 'E-commerce Brands', 'Logistics')",
+            "default": "Local Businesses & Startups"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service_domain"
+        ],
+        "title": "OmniDomainResearchRequest"
+      },
+      "OmniDomainResponse": {
+        "properties": {
+          "selected_domain": {
+            "type": "string",
+            "title": "Selected Domain"
+          },
+          "market_overview": {
+            "type": "string",
+            "title": "Market Overview"
+          },
+          "capabilities_showcase": {
+            "items": {
+              "$ref": "#/components/schemas/DomainCapabilityDetail"
+            },
+            "type": "array",
+            "title": "Capabilities Showcase"
+          },
+          "researched_opportunities": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchedClientOpportunity"
+            },
+            "type": "array",
+            "title": "Researched Opportunities"
+          },
+          "consultative_closing_strategy": {
+            "type": "string",
+            "title": "Consultative Closing Strategy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "selected_domain",
+          "market_overview",
+          "capabilities_showcase",
+          "researched_opportunities",
+          "consultative_closing_strategy"
+        ],
+        "title": "OmniDomainResponse"
       },
       "OmnichannelMessageRequest": {
         "properties": {
@@ -1642,6 +1796,44 @@
           "markdown_report"
         ],
         "title": "PublishResponse"
+      },
+      "ResearchedClientOpportunity": {
+        "properties": {
+          "business_name": {
+            "type": "string",
+            "title": "Business Name"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "service_domain_needed": {
+            "type": "string",
+            "title": "Service Domain Needed"
+          },
+          "identified_gap": {
+            "type": "string",
+            "title": "Identified Gap"
+          },
+          "suggested_solution": {
+            "type": "string",
+            "title": "Suggested Solution"
+          },
+          "personalized_high_ticket_proposal": {
+            "type": "string",
+            "title": "Personalized High Ticket Proposal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "business_name",
+          "location",
+          "service_domain_needed",
+          "identified_gap",
+          "suggested_solution",
+          "personalized_high_ticket_proposal"
+        ],
+        "title": "ResearchedClientOpportunity"
       },
       "ResearchedLead": {
         "properties": {

@@ -29,6 +29,11 @@ from core.research_and_safety import (
     OmnichannelMessageRequest,
     OmnichannelReplyResponse
 )
+from core.omni_agency import (
+    OmniDomainAgencyEngine,
+    OmniDomainResearchRequest,
+    OmniDomainResponse
+)
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -306,6 +311,14 @@ def reply_to_social_and_store_messages(req: OmnichannelMessageRequest):
     Generates human-like, non-spam replies with anti-block safety rules.
     """
     return MarketResearchAndSafetyEngine.handle_omnichannel_inbox_message(req)
+
+@app.post("/api/agency/pitch", response_model=OmniDomainResponse)
+def pitch_multi_domain_services_and_research(req: OmniDomainResearchRequest):
+    """
+    Called by Custom GPT to pitch Web Design, Data Analytics, AI Agents, or Spreadsheets,
+    and discover high-ticket client opportunities using Google Maps and web research.
+    """
+    return OmniDomainAgencyEngine.analyze_and_pitch(req)
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

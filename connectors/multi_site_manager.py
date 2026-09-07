@@ -23,14 +23,19 @@ class MultiSiteManager:
         self.sites = self._load_sites()
 
     def _load_sites(self) -> List[Dict[str, Any]]:
-        if not self.config_path.exists():
-            return []
         try:
-            data = json.loads(self.config_path.read_text(encoding="utf-8"))
-            return [s for s in data if s.get("enabled", True)]
-        except Exception as e:
-            print(f"[MULTI-SITE] Warning: Error reading {self.config_path}: {e}")
-            return []
+            from core.dynamic_store_registry import DynamicStoreRegistry
+            registry = DynamicStoreRegistry()
+            return registry.get_all_stores()
+        except Exception:
+            if not self.config_path.exists():
+                return []
+            try:
+                data = json.loads(self.config_path.read_text(encoding="utf-8"))
+                return [s for s in data if s.get("enabled", True)]
+            except Exception as e:
+                print(f"[MULTI-SITE] Warning: Error reading {self.config_path}: {e}")
+                return []
 
     def get_enabled_sites(self) -> List[Dict[str, Any]]:
         return self.sites
@@ -227,3 +232,30 @@ class MultiSiteManager:
                 status=JobStatus.FAILED,
                 message=str(e)
             )
+
+    def deploy_custom_store(
+        self,
+        store_url: str,
+        store_type: str,
+        api_key: str,
+        api_secret: Optional[str],
+        product: ProductMetadata
+    ) -> PublishResult:
+        """
+        Deploys on-the-fly to a user-specified personal store without modifying websites.json.
+        """
+        clean_url = store_url.strip().rstrip("/")
+        s_type = store_type.lower().strip()
+
+        if s_type == "woocommerce":
+            endpoint = f"{clean_url}/wp-json/wc/v3/products"
+            creds = {"consumer_key": api_key, "consumer_secret": api_secret or ""}
+            return self._publish_woocommerce("Direct User WooCommerce", clean_url, endpoint, creds, product)
+        elif s_type == "shopify":
+            endpoint = f"{clean_url}/admin/api/2023-10/products.json"
+            creds = {"access_token": api_key}
+            return self._publish_shopify("Direct User Shopify", clean_url, endpoint, creds, product)
+        else:
+            endpoint = f"{clean_url}/api/products"
+            creds = {"access_token": api_key}
+            return self._publish_custom_webhook("Direct User Store", clean_url, endpoint, creds, product)

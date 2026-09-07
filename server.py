@@ -6,7 +6,7 @@ product creation, packaging, and 20-platform distribution via a single URL/Actio
 import os
 import json
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from pydantic import BaseModel, Field
 from core.product_generator import ProductGenerator
@@ -14,6 +14,9 @@ from core.ingest import ProductIngestionEngine
 from core.publisher import PublisherOrchestrator
 from core.reporter import PublishReporter
 from core.store_reader import StoreReader
+from core.dynamic_store_registry import DynamicStoreRegistry
+from core.linkedin_promoter import LinkedInPromoter
+from core.session_vault import SessionVault
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -39,18 +42,55 @@ async def vercel_path_normalizer(request: Request, call_next):
 
     return await call_next(request)
 
+class AddStoreRequest(BaseModel):
+    name: str = Field(..., description="Display name for the website or store (e.g. 'My WordPress Store')")
+    url: str = Field(..., description="Base URL of the website (e.g. 'https://mystore.com')")
+    type: str = Field("woocommerce", description="Type of store: 'woocommerce', 'shopify', 'custom_webhook', or 'marketplace'")
+    api_key: Optional[str] = Field(None, description="Consumer Key or Shopify Access Token (if API based)")
+    api_secret: Optional[str] = Field(None, description="Consumer Secret for WooCommerce (optional)")
+    new_product_url: Optional[str] = Field(None, description="Custom 1-click new product listing URL if marketplace (e.g. Etsy, etc.)")
+
+class AddStoreResponse(BaseModel):
+    status: str
+    message: str
+    store: Dict[str, Any]
+
+class SessionSyncRequest(BaseModel):
+    platform: str = Field(..., description="Platform name (e.g. 'Gumroad', 'Etsy', 'Shopify')")
+    auth_token_or_cookie: str = Field(..., description="Session token or cookie string")
+    expires_in_days: int = Field(180, description="Session validity duration in days")
+    device_name: str = Field("User Device", description="Name of device performing the sync")
+
+class SessionStatusResponse(BaseModel):
+    all_healthy: bool
+    total_monitored: int
+    active_sessions_count: int
+    logged_out_alerts: List[str]
+    platforms: List[Dict[str, Any]]
+    multi_device_sync_status: str
+
 class PublishRequest(BaseModel):
     prompt: Optional[str] = Field(None, description="Idea/topic for the digital product to generate (e.g. 'Gym Fitness & Diet Tracker')")
     product_file: Optional[str] = Field(None, description="Existing file name in workspace if publishing an already created file")
     format_type: str = Field("spreadsheet", description="Type of product: 'spreadsheet', 'document', or 'code'")
     no_api: bool = Field(True, description="Whether to use Zero-API browser automation (default True)")
     auto_approve: bool = Field(True, description="Whether to auto-approve pre-publish checklist")
+    # Dynamic Store Integration
+    custom_store_url: Optional[str] = Field(None, description="Direct URL of user's personal WooCommerce or Shopify store")
+    custom_store_type: Optional[str] = Field(None, description="Type of store: 'woocommerce' or 'shopify'")
+    custom_store_api_key: Optional[str] = Field(None, description="Shopify Access Token or WooCommerce Consumer Key")
+    custom_store_api_secret: Optional[str] = Field(None, description="WooCommerce Consumer Secret (if WooCommerce)")
 
 class PlatformStatusItem(BaseModel):
     platform: str
     status: str
     url: Optional[str]
     message: str
+
+class LinkedInPromoItem(BaseModel):
+    headline: str
+    post_copy: str
+    one_click_share_url: str
 
 class PublishResponse(BaseModel):
     status: str
@@ -60,6 +100,7 @@ class PublishResponse(BaseModel):
     total_platforms: int
     platforms: List[PlatformStatusItem]
     markdown_report: str
+    linkedin_promo: Optional[LinkedInPromoItem] = None
 
 @app.get("/")
 @app.get("/api")
@@ -111,6 +152,48 @@ def get_store_connections():
     reader = StoreReader()
     return {"stores": reader.get_store_connections()}
 
+@app.post("/api/stores/add", response_model=AddStoreResponse)
+def add_new_store(req: AddStoreRequest):
+    """
+    Called by Custom GPT to dynamically connect and register ANY new website or marketplace.
+    """
+    registry = DynamicStoreRegistry()
+    saved = registry.register_store(
+        name=req.name,
+        url=req.url,
+        store_type=req.type,
+        api_key=req.api_key,
+        api_secret=req.api_secret,
+        new_product_url=req.new_product_url
+    )
+    return AddStoreResponse(
+        status="SUCCESS",
+        message=f"Store '{req.name}' successfully connected and registered for auto-publishing!",
+        store=saved
+    )
+
+@app.get("/api/session/status", response_model=SessionStatusResponse)
+def check_login_sessions():
+    """
+    Called by Custom GPT to proactively monitor login status across all stores
+    and alert if any store has been logged out.
+    """
+    vault = SessionVault()
+    return vault.get_all_session_statuses()
+
+@app.post("/api/session/sync")
+def sync_device_session(req: SessionSyncRequest):
+    """
+    Syncs authenticated session from any device (phone, laptop, PC) into the Cloud Vault.
+    """
+    vault = SessionVault()
+    return vault.sync_session_from_device(
+        platform=req.platform,
+        auth_token_or_cookie=req.auth_token_or_cookie,
+        expires_in_days=req.expires_in_days,
+        device_name=req.device_name
+    )
+
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):
     """
@@ -145,6 +228,17 @@ def publish_digital_product(req: PublishRequest):
         )
         results = orchestrator.run()
 
+        # 3b. On-the-fly Dynamic Store Deployment (if provided directly by user in prompt)
+        if req.custom_store_url and req.custom_store_api_key:
+            custom_res = orchestrator.multi_site_manager.deploy_custom_store(
+                store_url=req.custom_store_url,
+                store_type=req.custom_store_type or "woocommerce",
+                api_key=req.custom_store_api_key,
+                api_secret=req.custom_store_api_secret,
+                product=product_meta
+            )
+            results.insert(0, custom_res)
+
         # 4. Generate Report
         if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
             import tempfile
@@ -160,6 +254,18 @@ def publish_digital_product(req: PublishRequest):
 
         reporter = PublishReporter(product=product_meta, results=results, output_dir=str(out_dir))
         md_report = reporter.generate_report()
+
+        # 5. Generate LinkedIn Viral Promotion with 1-Click Share Link
+        primary_link = next(
+            (r.listing_url for r in results if r.listing_url and ("gumroad" in r.listing_url.lower() or "etsy" in r.listing_url.lower())),
+            results[0].listing_url if results else "https://auto-publish-agents.vercel.app"
+        )
+        promo_data = LinkedInPromoter.generate_promotion(product_meta, primary_link)
+        linkedin_item = LinkedInPromoItem(
+            headline=promo_data["headline"],
+            post_copy=promo_data["post_copy"],
+            one_click_share_url=promo_data["one_click_share_url"]
+        )
 
         platform_items = [
             PlatformStatusItem(
@@ -178,7 +284,8 @@ def publish_digital_product(req: PublishRequest):
             bundle_zip=product_meta.bundle_zip_path or str(product_path),
             total_platforms=len(results),
             platforms=platform_items,
-            markdown_report=md_report
+            markdown_report=md_report,
+            linkedin_promo=linkedin_item
         )
 
     except Exception as e:

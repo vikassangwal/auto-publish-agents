@@ -16,12 +16,16 @@ class StoreReader:
         self.personal_sites = self._load_personal_sites()
 
     def _load_personal_sites(self) -> List[Dict[str, Any]]:
-        if not self.config_path.exists():
-            return []
         try:
-            return json.loads(self.config_path.read_text(encoding="utf-8"))
+            from core.dynamic_store_registry import DynamicStoreRegistry
+            return DynamicStoreRegistry().get_all_stores()
         except Exception:
-            return []
+            if not self.config_path.exists():
+                return []
+            try:
+                return json.loads(self.config_path.read_text(encoding="utf-8"))
+            except Exception:
+                return []
 
     def get_store_connections(self) -> List[Dict[str, Any]]:
         """Returns connection and readiness status of all supported stores."""

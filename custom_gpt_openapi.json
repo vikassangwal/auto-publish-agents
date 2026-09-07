@@ -137,6 +137,101 @@
         }
       }
     },
+    "/api/stores/add": {
+      "post": {
+        "summary": "Add New Store",
+        "description": "Called by Custom GPT to dynamically connect and register ANY new website or marketplace.",
+        "operationId": "add_new_store_api_stores_add_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddStoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddStoreResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/session/status": {
+      "get": {
+        "summary": "Check Login Sessions",
+        "description": "Called by Custom GPT to proactively monitor login status across all stores\nand alert if any store has been logged out.",
+        "operationId": "check_login_sessions_api_session_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/session/sync": {
+      "post": {
+        "summary": "Sync Device Session",
+        "description": "Syncs authenticated session from any device (phone, laptop, PC) into the Cloud Vault.",
+        "operationId": "sync_device_session_api_session_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionSyncRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/publish": {
       "post": {
         "summary": "Publish Digital Product",
@@ -179,6 +274,91 @@
   },
   "components": {
     "schemas": {
+      "AddStoreRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Display name for the website or store (e.g. 'My WordPress Store')"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "Base URL of the website (e.g. 'https://mystore.com')"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Type of store: 'woocommerce', 'shopify', 'custom_webhook', or 'marketplace'",
+            "default": "woocommerce"
+          },
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Key",
+            "description": "Consumer Key or Shopify Access Token (if API based)"
+          },
+          "api_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Secret",
+            "description": "Consumer Secret for WooCommerce (optional)"
+          },
+          "new_product_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Product Url",
+            "description": "Custom 1-click new product listing URL if marketplace (e.g. Etsy, etc.)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "url"
+        ],
+        "title": "AddStoreRequest"
+      },
+      "AddStoreResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "store": {
+            "type": "object",
+            "title": "Store"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "store"
+        ],
+        "title": "AddStoreResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -191,6 +371,29 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LinkedInPromoItem": {
+        "properties": {
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "post_copy": {
+            "type": "string",
+            "title": "Post Copy"
+          },
+          "one_click_share_url": {
+            "type": "string",
+            "title": "One Click Share Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "headline",
+          "post_copy",
+          "one_click_share_url"
+        ],
+        "title": "LinkedInPromoItem"
       },
       "PlatformStatusItem": {
         "properties": {
@@ -270,6 +473,54 @@
             "title": "Auto Approve",
             "description": "Whether to auto-approve pre-publish checklist",
             "default": true
+          },
+          "custom_store_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Store Url",
+            "description": "Direct URL of user's personal WooCommerce or Shopify store"
+          },
+          "custom_store_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Store Type",
+            "description": "Type of store: 'woocommerce' or 'shopify'"
+          },
+          "custom_store_api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Store Api Key",
+            "description": "Shopify Access Token or WooCommerce Consumer Key"
+          },
+          "custom_store_api_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Store Api Secret",
+            "description": "WooCommerce Consumer Secret (if WooCommerce)"
           }
         },
         "type": "object",
@@ -307,6 +558,16 @@
           "markdown_report": {
             "type": "string",
             "title": "Markdown Report"
+          },
+          "linkedin_promo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LinkedInPromoItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -320,6 +581,82 @@
           "markdown_report"
         ],
         "title": "PublishResponse"
+      },
+      "SessionStatusResponse": {
+        "properties": {
+          "all_healthy": {
+            "type": "boolean",
+            "title": "All Healthy"
+          },
+          "total_monitored": {
+            "type": "integer",
+            "title": "Total Monitored"
+          },
+          "active_sessions_count": {
+            "type": "integer",
+            "title": "Active Sessions Count"
+          },
+          "logged_out_alerts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Logged Out Alerts"
+          },
+          "platforms": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Platforms"
+          },
+          "multi_device_sync_status": {
+            "type": "string",
+            "title": "Multi Device Sync Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "all_healthy",
+          "total_monitored",
+          "active_sessions_count",
+          "logged_out_alerts",
+          "platforms",
+          "multi_device_sync_status"
+        ],
+        "title": "SessionStatusResponse"
+      },
+      "SessionSyncRequest": {
+        "properties": {
+          "platform": {
+            "type": "string",
+            "title": "Platform",
+            "description": "Platform name (e.g. 'Gumroad', 'Etsy', 'Shopify')"
+          },
+          "auth_token_or_cookie": {
+            "type": "string",
+            "title": "Auth Token Or Cookie",
+            "description": "Session token or cookie string"
+          },
+          "expires_in_days": {
+            "type": "integer",
+            "title": "Expires In Days",
+            "description": "Session validity duration in days",
+            "default": 180
+          },
+          "device_name": {
+            "type": "string",
+            "title": "Device Name",
+            "description": "Name of device performing the sync",
+            "default": "User Device"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platform",
+          "auth_token_or_cookie"
+        ],
+        "title": "SessionSyncRequest"
       },
       "ValidationError": {
         "properties": {

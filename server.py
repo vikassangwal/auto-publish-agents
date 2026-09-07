@@ -7,7 +7,7 @@ import os
 import json
 from pathlib import Path
 from typing import Optional, List, Dict
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from pydantic import BaseModel, Field
 from core.product_generator import ProductGenerator
 from core.ingest import ProductIngestionEngine
@@ -17,8 +17,26 @@ from core.reporter import PublishReporter
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
     description="Autonomous Agent API to create and publish digital products to 20+ marketplaces & websites from Custom GPTs.",
-    version="2.0.0"
+    version="2.0.0",
+    docs_url="/docs",
+    openapi_url="/openapi.json"
 )
+
+@app.middleware("http")
+async def vercel_path_normalizer(request: Request, call_next):
+    """
+    Normalizes URLs when deployed behind Vercel rewrites.
+    Maps /api/index.py or rewritten paths back to their true FastAPI routes.
+    """
+    matched = request.headers.get("x-matched-path")
+    if matched:
+        request.scope["path"] = matched
+    elif request.scope.get("path") in ["/api/index.py", "/api/index", "/api"]:
+        request.scope["path"] = "/"
+    elif request.scope.get("path", "").startswith("/api/index.py/"):
+        request.scope["path"] = request.scope["path"][len("/api/index.py"):]
+
+    return await call_next(request)
 
 class PublishRequest(BaseModel):
     prompt: Optional[str] = Field(None, description="Idea/topic for the digital product to generate (e.g. 'Gym Fitness & Diet Tracker')")
@@ -43,6 +61,9 @@ class PublishResponse(BaseModel):
     markdown_report: str
 
 @app.get("/")
+@app.get("/api")
+@app.get("/api/index")
+@app.get("/api/index.py")
 def health_check():
     return {
         "status": "online",

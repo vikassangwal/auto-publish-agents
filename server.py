@@ -196,6 +196,7 @@ def serve_openapi():
 @app.get("/api/webhook/sale", include_in_schema=False)
 @app.get("/api/webhook/payhip", include_in_schema=False)
 @app.get("/api/webhook/gumroad", include_in_schema=False)
+@app.get("/api/webhook/lemonsqueezy", include_in_schema=False)
 def webhook_status_check():
     return {
         "status": "ACTIVE",
@@ -205,7 +206,9 @@ def webhook_status_check():
 @app.post("/api/webhook/sale")
 @app.post("/api/webhook/payhip")
 @app.post("/api/webhook/gumroad")
+@app.post("/api/webhook/lemonsqueezy")
 async def handle_incoming_sale_webhook(request: Request):
+
     """
     Receives instant sale notifications from Payhip, Gumroad, or personal stores.
     Records transaction and triggers automated fulfillment / alerts.

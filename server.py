@@ -193,13 +193,57 @@ def health_check():
 def serve_openapi():
     return app.openapi()
 
-@app.get("/api/debug-scope", include_in_schema=False)
-def debug_scope(request: Request):
+@app.get("/api/webhook/sale", include_in_schema=False)
+@app.get("/api/webhook/payhip", include_in_schema=False)
+@app.get("/api/webhook/gumroad", include_in_schema=False)
+def webhook_status_check():
     return {
-        "scope_path": request.scope.get("path"),
-        "url_path": request.url.path,
-        "headers": dict(request.headers)
+        "status": "ACTIVE",
+        "message": "Sale Webhook Endpoint is online and ready to receive real-time sales notifications."
     }
+
+@app.post("/api/webhook/sale")
+@app.post("/api/webhook/payhip")
+@app.post("/api/webhook/gumroad")
+async def handle_incoming_sale_webhook(request: Request):
+    """
+    Receives instant sale notifications from Payhip, Gumroad, or personal stores.
+    Records transaction and triggers automated fulfillment / alerts.
+    """
+    try:
+        content_type = request.headers.get("content-type", "")
+        if "application/json" in content_type:
+            data = await request.json()
+        else:
+            form = await request.form()
+            data = dict(form)
+    except Exception:
+        data = {}
+
+    customer_email = data.get("email") or data.get("customer_email") or data.get("buyer_email") or "customer"
+    product_name = data.get("product_name") or data.get("item_name") or (data.get("product", {}).get("name") if isinstance(data.get("product"), dict) else None) or "Digital Product"
+    price = data.get("price") or data.get("amount") or data.get("price_cents", 0)
+    currency = data.get("currency", "USD")
+
+    print(f"[WEBHOOK SALE] Received sale of {currency} {price} for '{product_name}' by {customer_email}")
+
+    try:
+        from core.email_dispatcher import EmailDispatcher
+        EmailDispatcher.compose_and_send(
+            to_email="knoworadigital@gmail.com",
+            subject=f"🎉 New Sale Alert! {product_name} sold for {currency} {price}",
+            body=f"Congratulations! You just made a new sale on your digital store!\n\nProduct: {product_name}\nAmount: {currency} {price}\nCustomer: {customer_email}\nTimestamp: Instant Real-time Webhook\n\nKeep up the great work!"
+        )
+    except Exception:
+        pass
+
+    return {
+        "status": "SUCCESS",
+        "message": "Sale webhook processed successfully",
+        "product": product_name,
+        "customer": customer_email
+    }
+
 
 
 @app.get("/api/platforms")

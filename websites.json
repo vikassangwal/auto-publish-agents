@@ -123,10 +123,14 @@
     "type": "marketplace",
     "api_endpoint": "https://instamojo.com/knoworadigital/api/products",
     "credentials": {
-      "access_token": ""
+      "access_token": "",
+      "api_key": "033740936d2d2693411033b58f4c52de",
+      "auth_token": "0658034f24a744f48a38b072a7bfb80b",
+      "salt": "08a1a85564794235986ce54fc73d0a09"
     },
     "new_product_url": "https://www.instamojo.com/store/products/add/",
     "enabled": true,
-    "added_via": "Custom GPT Action"
+    "added_via": "Custom GPT Action",
+    "status": "API_CONNECTED"
   }
 ]

@@ -107,11 +107,14 @@
     "type": "marketplace",
     "api_endpoint": "https://whop.com/knowora/api/products",
     "credentials": {
-      "access_token": ""
+      "access_token": "",
+      "api_key": "apik_BZcswhWMqYWIj_C6410039_C_d7a7ac4ecd23c448ea2a681f5702e7056157f35bff20bd2e30b424f85a6568"
     },
     "new_product_url": "https://dash.whop.com/experiences/create",
     "enabled": true,
-    "added_via": "Custom GPT Action"
+    "added_via": "Custom GPT Action",
+    "company_id": "biz_UBC6jiSvPCvF0p",
+    "status": "API_CONNECTED"
   },
   {
     "id": "site_digital_knowora_instamojo_store",

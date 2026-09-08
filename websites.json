@@ -60,5 +60,31 @@
       "access_token": "ghost_admin_token"
     },
     "enabled": false
+  },
+  {
+    "id": "site_digital_knowora_gumroad_store",
+    "name": "Digital KnowOra Gumroad Store",
+    "url": "https://knowora.gumroad.com",
+    "type": "marketplace",
+    "api_endpoint": "https://knowora.gumroad.com/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://app.gumroad.com/products/new",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_cosmofeed_superprofile_store",
+    "name": "Cosmofeed Superprofile Store",
+    "url": "https://superprofile.bio/knoworadigital",
+    "type": "marketplace",
+    "api_endpoint": "https://superprofile.bio/knoworadigital/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://superprofile.bio/creator/products",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
   }
 ]

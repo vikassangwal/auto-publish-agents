@@ -132,5 +132,18 @@
     "enabled": true,
     "added_via": "Custom GPT Action",
     "status": "API_CONNECTED"
+  },
+  {
+    "id": "site_lemon_squeezy",
+    "name": "Digital KnowOra Lemon Squeezy Store",
+    "type": "marketplace",
+    "url": "https://digitalknowora.lemonsqueezy.com",
+    "store_id": "469887",
+    "api_endpoint": "https://api.lemonsqueezy.com/v1/products",
+    "credentials": {
+      "store_id": "469887"
+    },
+    "status": "API_CONNECTED",
+    "enabled": true
   }
 ]

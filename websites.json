@@ -86,5 +86,18 @@
     "new_product_url": "https://superprofile.bio/creator/products",
     "enabled": true,
     "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_digital_knowora_payhip_store",
+    "name": "Digital KnowOra Payhip Store",
+    "url": "https://payhip.com/knoworadigital",
+    "type": "marketplace",
+    "api_endpoint": "https://payhip.com/knoworadigital/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://payhip.com/product/add/digital",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
   }
 ]

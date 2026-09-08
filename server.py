@@ -517,6 +517,62 @@ def publish_digital_product(req: PublishRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ---------------------------------------------------------
+# SHOPIFY STORE & DROPSHIPPING AUTOMATION
+# ---------------------------------------------------------
+@app.get("/api/shopify/status", tags=["Shopify Dropshipping"])
+def get_shopify_status():
+    """
+    Returns live connection status of the connected Shopify store.
+    """
+    try:
+        from connectors.shopify import ShopifyConnector
+        connector = ShopifyConnector()
+        info = connector.get_shop_info()
+        shop = info.get("shop", {})
+        return {
+            "status": "CONNECTED" if shop else "FAILED",
+            "shop_name": shop.get("name"),
+            "domain": shop.get("domain"),
+            "currency": shop.get("currency"),
+            "country": shop.get("country_name"),
+            "owner": shop.get("shop_owner"),
+            "email": shop.get("email"),
+            "plan": shop.get("plan_display_name")
+        }
+    except Exception as e:
+        return {"status": "ERROR", "message": str(e)}
+
+@app.post("/api/shopify/publish", tags=["Shopify Dropshipping"])
+def publish_to_shopify(
+    title: str,
+    description: str,
+    price_inr: float,
+    compare_at_price: float = None,
+    tags: str = "Dropshipping, Trending",
+    vendor: str = "Digital KnowOra"
+):
+    """
+    Publishes a winning dropshipping or digital product directly to Shopify store catalog.
+    """
+    try:
+        from connectors.shopify import ShopifyConnector
+        connector = ShopifyConnector()
+        tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+        result = connector.create_product(
+            title=title,
+            body_html=description.replace("\n", "<br/>"),
+            price=price_inr,
+            compare_at_price=compare_at_price,
+            tags=tag_list,
+            vendor=vendor,
+            status="active"
+        )
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 if __name__ == "__main__":
     import uvicorn
     print("Starting Auto-Publisher Webhook Server on port 8000...")

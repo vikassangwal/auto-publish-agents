@@ -99,5 +99,31 @@
     "new_product_url": "https://payhip.com/product/add/digital",
     "enabled": true,
     "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_digital_knowora_whop_store",
+    "name": "Digital KnowOra Whop Store",
+    "url": "https://whop.com/knowora",
+    "type": "marketplace",
+    "api_endpoint": "https://whop.com/knowora/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://dash.whop.com/experiences/create",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_digital_knowora_instamojo_store",
+    "name": "Digital KnowOra Instamojo Store",
+    "url": "https://instamojo.com/knoworadigital",
+    "type": "marketplace",
+    "api_endpoint": "https://instamojo.com/knoworadigital/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://www.instamojo.com/store/products/add/",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
   }
 ]

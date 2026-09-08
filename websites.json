@@ -145,5 +145,18 @@
     },
     "status": "API_CONNECTED",
     "enabled": true
+  },
+  {
+    "id": "site_digital_knowora_podia_store",
+    "name": "Digital KnowOra Podia Store",
+    "url": "https://app.podia.com",
+    "type": "marketplace",
+    "api_endpoint": "https://app.podia.com/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://app.podia.com/products/new",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
   }
 ]

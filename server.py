@@ -34,6 +34,12 @@ from core.omni_agency import (
     OmniDomainResearchRequest,
     OmniDomainResponse
 )
+from core.dropshipping_engine import (
+    DropshippingEngine,
+    DropshippingResearchRequest,
+    DropshippingCatalogResponse
+)
+
 
 app = FastAPI(
     title="Digital Product Auto-Publisher Agent API",
@@ -404,6 +410,15 @@ def pitch_multi_domain_services_and_research(req: OmniDomainResearchRequest):
     and discover high-ticket client opportunities using Google Maps and web research.
     """
     return OmniDomainAgencyEngine.analyze_and_pitch(req)
+
+@app.post("/api/dropshipping/research", response_model=DropshippingCatalogResponse)
+def research_dropshipping_winning_products(req: DropshippingResearchRequest):
+    """
+    Called by Custom GPT to discover trending viral dropshipping products, calculate margins,
+    fetch reliable suppliers (Roposo, GlowRoad, CJ Dropshipping), and generate viral Reels ad copies.
+    """
+    return DropshippingEngine.research_winning_products(req)
+
 
 @app.post("/api/publish", response_model=PublishResponse)
 def publish_digital_product(req: PublishRequest):

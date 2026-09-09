@@ -1,0 +1,95 @@
+
+<section class="pdp">
+  <div class="container pdp__inner">
+    <div class="pdp__gallery">
+      <div class="pdp__main">
+        {% if product.featured_image %}
+          <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.title | escape }}" id="mainImg">
+        {% else %}
+          <div class="pdp__ph">Product Image</div>
+        {% endif %}
+        {% if product.compare_at_price > product.price %}
+          {% assign disc = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+          <span class="pdp__sale">-{{ disc }}%</span>
+        {% endif %}
+      </div>
+      <div class="pdp__thumbs">
+        {% for image in product.images %}
+          <button class="pdp__thumb" onclick="document.getElementById('mainImg').src='{{ image | image_url: width: 800 }}'">
+            <img src="{{ image | image_url: width: 120 }}" alt="Thumb" loading="lazy">
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="pdp__info">
+      <nav class="pdp__bread">
+        <a href="/">Home</a> &#x203A; <a href="/collections/all">Products</a> &#x203A; <span>{{ product.title | truncate: 30 }}</span>
+      </nav>
+      <span class="pdp__brand">{{ product.vendor }}</span>
+      <h1 class="pdp__title">{{ product.title }}</h1>
+      <div class="pdp__rating">
+        <span class="pdp__stars-bg"><span class="pdp__stars-fill" style="width:96%">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span></span>
+        <span class="pdp__rat-n">4.8</span>
+        <span class="pdp__rat-c">({{ product.id | modulo: 300 | plus: 150 }} Ratings & {{ product.id | modulo: 50 | plus: 30 }} Reviews)</span>
+        <span class="pdp__sold-tag">&#x1F525; {{ product.id | modulo: 500 | plus: 500 }}+ sold</span>
+      </div>
+
+      <div class="pdp__price-box">
+        <span class="pdp__p-now">{{ product.price | money }}</span>
+        {% if product.compare_at_price > product.price %}
+          <span class="pdp__p-mrp">MRP <s>{{ product.compare_at_price | money }}</s></span>
+          {% assign disc = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+          <span class="pdp__p-off">({{ disc }}% OFF)</span>
+        {% endif %}
+        <small class="pdp__tax">inclusive of all taxes</small>
+      </div>
+
+      <!-- Bank Offers -->
+      <div class="pdp__offers">
+        <h4>&#x1F4B3; Available Offers</h4>
+        <div class="pdp__offer-item">&#x2705; <strong>Bank Offer:</strong> 10% off on SBI Credit Card, up to &#x20B9;500. <a href="#">T&amp;C</a></div>
+        <div class="pdp__offer-item">&#x2705; <strong>Prepaid Offer:</strong> Extra 5% off on UPI/Card payments.</div>
+        <div class="pdp__offer-item">&#x2705; <strong>Combo Offer:</strong> Buy 2 & get additional 10% discount.</div>
+        <div class="pdp__offer-item">&#x2705; <strong>No-Cost EMI:</strong> Starting &#x20B9;166/month on select cards.</div>
+      </div>
+
+      <!-- Delivery Info -->
+      <div class="pdp__delivery">
+        <h4>&#x1F69A; Delivery Options</h4>
+        <div class="pdp__del-row">
+          <div class="pdp__del-item"><strong>&#x26A1; Digital Product?</strong> Instant download after payment.</div>
+          <div class="pdp__del-item"><strong>&#x1F4E6; Physical Product?</strong> Usually delivered in 3-5 business days. Free shipping on prepaid.</div>
+          <div class="pdp__del-item"><strong>&#x1F4B0; Cash on Delivery</strong> available on 25,000+ pin codes.</div>
+        </div>
+      </div>
+
+      <div class="pdp__desc">{{ product.description }}</div>
+
+      {% form 'product', product %}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <div class="pdp__qty-row">
+          <span>Qty:</span>
+          <div class="qty-box">
+            <button type="button" onclick="var q=document.getElementById('pqty');q.value=Math.max(1,parseInt(q.value)-1)">&#x2212;</button>
+            <input type="number" id="pqty" name="quantity" value="1" min="1">
+            <button type="button" onclick="var q=document.getElementById('pqty');q.value=parseInt(q.value)+1">+</button>
+          </div>
+        </div>
+        <div class="pdp__btns">
+          <button type="submit" class="btn btn--cart">&#x1F6D2; ADD TO CART</button>
+          <a href="/cart" class="btn btn--buy">&#x26A1; BUY NOW</a>
+        </div>
+      {% endform %}
+
+      <div class="pdp__trust-bar">
+        <span>&#x2705; Genuine Product</span>
+        <span>&#x1F512; Secure Payment</span>
+        <span>&#x1F69A; Free Shipping</span>
+        <span>&#x1F504; Easy Returns</span>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Product Detail","settings":[]}
+{% endschema %}

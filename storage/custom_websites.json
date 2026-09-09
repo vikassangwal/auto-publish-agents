@@ -1,0 +1,80 @@
+[
+  {
+    "id": "site_digital_knowora_gumroad_store",
+    "name": "Digital KnowOra Gumroad Store",
+    "url": "https://knowora.gumroad.com",
+    "type": "marketplace",
+    "api_endpoint": "https://knowora.gumroad.com/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://app.gumroad.com/products/new",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_cosmofeed_superprofile_store",
+    "name": "Cosmofeed Superprofile Store",
+    "url": "https://superprofile.bio/knoworadigital",
+    "type": "marketplace",
+    "api_endpoint": "https://superprofile.bio/knoworadigital/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://superprofile.bio/creator/products",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_digital_knowora_payhip_store",
+    "name": "Digital KnowOra Payhip Store",
+    "url": "https://payhip.com/knoworadigital",
+    "type": "marketplace",
+    "api_endpoint": "https://payhip.com/knoworadigital/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://payhip.com/product/add/digital",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_digital_knowora_whop_store",
+    "name": "Digital KnowOra Whop Store",
+    "url": "https://whop.com/knowora",
+    "type": "marketplace",
+    "api_endpoint": "https://whop.com/knowora/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://dash.whop.com/experiences/create",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_digital_knowora_instamojo_store",
+    "name": "Digital KnowOra Instamojo Store",
+    "url": "https://instamojo.com/knoworadigital",
+    "type": "marketplace",
+    "api_endpoint": "https://instamojo.com/knoworadigital/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://www.instamojo.com/store/products/add/",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
+  },
+  {
+    "id": "site_digital_knowora_podia_store",
+    "name": "Digital KnowOra Podia Store",
+    "url": "https://app.podia.com",
+    "type": "marketplace",
+    "api_endpoint": "https://app.podia.com/api/products",
+    "credentials": {
+      "access_token": ""
+    },
+    "new_product_url": "https://app.podia.com/products/new",
+    "enabled": true,
+    "added_via": "Custom GPT Action"
+  }
+]

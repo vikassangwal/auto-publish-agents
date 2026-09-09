@@ -1,0 +1,47 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "settings": {}
+    },
+    "cats": {
+      "type": "categories",
+      "settings": {}
+    },
+    "carousel1": {
+      "type": "swipe-carousel",
+      "settings": {
+        "tag": "TRENDING NOW",
+        "title": "Most Popular This Week"
+      }
+    },
+    "carousel2": {
+      "type": "swipe-carousel",
+      "settings": {
+        "tag": "LIFESTYLE PICKS",
+        "title": "Lifestyle Essentials"
+      }
+    },
+    "reviews": {
+      "type": "reviews",
+      "settings": {}
+    },
+    "trust": {
+      "type": "trust",
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "cats",
+    "carousel1",
+    "carousel2",
+    "reviews",
+    "trust",
+    "newsletter"
+  ]
+}

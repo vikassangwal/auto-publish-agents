@@ -1,0 +1,53 @@
+
+<section class="featured">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-tag">BESTSELLERS</span>
+      <h2 class="section-title">Trending This Week</h2>
+      <p class="section-desc">Hand-picked by our AI engine for maximum value and demand.</p>
+    </div>
+    <div class="product-grid">
+      {% for product in collections.all.products limit: 8 %}
+      <div class="product-card">
+        <div class="product-card__image">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy">
+          {% else %}
+            <div class="product-card__placeholder">
+              <svg width="48" height="48" fill="none" stroke="#94a3b8" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            </div>
+          {% endif %}
+          {% if product.compare_at_price > product.price %}
+            {% assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+            <span class="product-card__sale">-{{ discount }}%</span>
+          {% endif %}
+          <div class="product-card__actions">
+            <a href="{{ product.url }}" class="quick-view-btn">Quick View</a>
+          </div>
+        </div>
+        <div class="product-card__info">
+          <span class="product-card__vendor">{{ product.vendor }}</span>
+          <h3 class="product-card__title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+          <div class="product-card__stars">★★★★★ <span>(4.9)</span></div>
+          <div class="product-card__pricing">
+            <span class="price-now">{{ product.price | money }}</span>
+            {% if product.compare_at_price > product.price %}
+              <span class="price-was">{{ product.compare_at_price | money }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+        <div class="empty-products">
+          <p>🚀 Products syncing via AutoPublisher AI Engine. Check back soon!</p>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="section-cta">
+      <a href="/collections/all" class="btn btn--primary">View All Products</a>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Featured Collection","settings":[]}
+{% endschema %}

@@ -1,0 +1,21 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "settings": {}
+    },
+    "trust": {
+      "type": "trust-badges",
+      "settings": {}
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "trust",
+    "featured"
+  ]
+}

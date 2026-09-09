@@ -1,0 +1,25 @@
+{
+  "Gumroad": {
+    "status": "LOGGED_IN",
+    "token": "lpDPVUgmqd...",
+    "device_name": "Primary Browser",
+    "last_active": "2026-09-08 13:42:37",
+    "expires_at": 1804407157.687545
+  },
+  "Lemon Squeezy": {
+    "status": "LOGGED_IN",
+    "last_active": "Auto-Session Active"
+  },
+  "Etsy": {
+    "status": "LOGGED_IN",
+    "last_active": "Auto-Session Active"
+  },
+  "Shopify": {
+    "status": "LOGGED_IN",
+    "last_active": "Auto-Session Active"
+  },
+  "WooCommerce": {
+    "status": "LOGGED_IN",
+    "last_active": "Auto-Session Active"
+  }
+}

@@ -1,0 +1,22 @@
+
+<div class="announcement-bar">
+  <div class="container announcement-bar__wrapper">
+    <p class="announcement-bar__message">
+      {{ section.settings.text | default: "⚡ GRAND LAUNCH SALE: 50% OFF TODAY | INSTANT DIGITAL DOWNLOAD & PAN-INDIA COD 🇮🇳" }}
+    </p>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Announcement Text",
+      "default": "⚡ GRAND LAUNCH SALE: 50% OFF TODAY | INSTANT DIGITAL DOWNLOAD & PAN-INDIA COD 🇮🇳"
+    }
+  ]
+}
+{% endschema %}

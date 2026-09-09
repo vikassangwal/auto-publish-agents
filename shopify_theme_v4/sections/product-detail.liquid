@@ -1,0 +1,74 @@
+
+<section class="pd">
+  <div class="container pd__inner">
+    <div class="pd__gallery">
+      <div class="pd__main-img">
+        {% if product.featured_image %}
+          <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.title | escape }}" id="mainImg">
+        {% else %}
+          <div class="img-placeholder lg">&#x1F4E6;</div>
+        {% endif %}
+        {% if product.compare_at_price > product.price %}
+          {% assign disc = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+          <span class="pd__sale-badge">-{{ disc }}% OFF</span>
+        {% endif %}
+      </div>
+      <div class="pd__thumbs">
+        {% for image in product.images %}
+          <button class="pd__thumb" onclick="document.getElementById('mainImg').src='{{ image | image_url: width: 800 }}'">
+            <img src="{{ image | image_url: width: 150 }}" alt="Thumbnail" loading="lazy">
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="pd__info">
+      <span class="pd__vendor">{{ product.vendor }}</span>
+      <h1 class="pd__title">{{ product.title }}</h1>
+      <div class="pd__rating">
+        <span class="pd__stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
+        <span class="pd__rat-count">({{ product.id | modulo: 80 | plus: 200 }} reviews)</span>
+        <span class="pd__sold">&#x1F525; {{ product.id | modulo: 200 | plus: 500 }}+ sold</span>
+      </div>
+      <div class="pd__price">
+        <span class="pd__price-now">{{ product.price | money }}</span>
+        {% if product.compare_at_price > product.price %}
+          <span class="pd__price-was">{{ product.compare_at_price | money }}</span>
+          {% assign saved = product.compare_at_price | minus: product.price %}
+          <span class="pd__save">You Save {{ saved | money }}!</span>
+        {% endif %}
+      </div>
+      <div class="pd__timer">
+        <span>&#x23F0; Offer expires in:</span>
+        <strong id="pd-timer">23:45:59</strong>
+      </div>
+      <div class="pd__desc">{{ product.description }}</div>
+      <div class="pd__features">
+        <div class="pd__feat">&#x2705; Free Shipping / Instant Download</div>
+        <div class="pd__feat">&#x2705; 7-Day Easy Returns</div>
+        <div class="pd__feat">&#x2705; Cash on Delivery Available</div>
+        <div class="pd__feat">&#x2705; 100% Secure Payment</div>
+      </div>
+      {% form 'product', product %}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <div class="pd__qty">
+          <label>Quantity:</label>
+          <div class="qty-ctrl">
+            <button type="button" onclick="var q=document.getElementById('qty');q.value=Math.max(1,parseInt(q.value)-1)">-</button>
+            <input type="number" id="qty" name="quantity" value="1" min="1">
+            <button type="button" onclick="var q=document.getElementById('qty');q.value=parseInt(q.value)+1">+</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-glow btn-full">&#x1F6D2; Add to Cart</button>
+      {% endform %}
+      <a href="/cart" class="btn btn-glass btn-full" style="margin-top:10px">&#x26A1; Buy Now</a>
+      <div class="pd__trust-row">
+        <span>&#x1F512; Secure</span>
+        <span>&#x1F69A; Free Shipping</span>
+        <span>&#x1F4AC; 24/7 Support</span>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Product Detail","settings":[]}
+{% endschema %}

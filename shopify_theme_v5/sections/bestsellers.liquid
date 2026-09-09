@@ -1,0 +1,50 @@
+
+<section class="bestsell">
+  <div class="container">
+    <div class="bs-head">
+      <h2>&#x1F3C6; Best Sellers</h2>
+      <a href="/collections/all" class="view-all">View All &#x203A;</a>
+    </div>
+    <div class="bs-track">
+      {% for product in collections.all.products limit: 12 %}
+      <div class="pcard">
+        <a href="{{ product.url }}" class="pcard__img-wrap">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 500 }}" alt="{{ product.title | escape }}" loading="lazy">
+          {% else %}
+            <div class="pcard__ph">&#x1F4E6;</div>
+          {% endif %}
+          {% if product.compare_at_price > product.price %}
+            {% assign d = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+            <span class="pcard__off">{{ d }}% OFF</span>
+          {% endif %}
+        </a>
+        <div class="pcard__body">
+          <span class="pcard__brand">{{ product.vendor }}</span>
+          <h3 class="pcard__name"><a href="{{ product.url }}">{{ product.title | truncate: 50 }}</a></h3>
+          <div class="pcard__rating">
+            <span class="stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</span>
+            <span class="rat-num">4.{{ product.id | modulo: 5 | plus: 5 }}</span>
+            <span class="rat-count">({{ product.id | modulo: 300 | plus: 100 }})</span>
+          </div>
+          <div class="pcard__price">
+            <span class="pp-now">{{ product.price | money }}</span>
+            {% if product.compare_at_price > product.price %}
+              <span class="pp-was">{{ product.compare_at_price | money }}</span>
+              {% assign saved = product.compare_at_price | minus: product.price %}
+              <span class="pp-save">Save {{ saved | money }}</span>
+            {% endif %}
+          </div>
+          <div class="pcard__tags">
+            <span class="ptag ptag--free">Free Delivery</span>
+            <span class="ptag ptag--cod">COD Available</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Best Sellers","settings":[]}
+{% endschema %}

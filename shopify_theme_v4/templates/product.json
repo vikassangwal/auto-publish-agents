@@ -1,0 +1,24 @@
+{
+  "sections": {
+    "main": {
+      "type": "product-detail",
+      "settings": {}
+    },
+    "reviews": {
+      "type": "reviews",
+      "settings": {}
+    },
+    "related": {
+      "type": "swipe-carousel",
+      "settings": {
+        "tag": "YOU MAY ALSO LIKE",
+        "title": "Related Products"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "reviews",
+    "related"
+  ]
+}

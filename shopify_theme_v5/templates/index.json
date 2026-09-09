@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "banners": {
+      "type": "hero-banners",
+      "settings": {}
+    },
+    "cats": {
+      "type": "shop-by-category",
+      "settings": {}
+    },
+    "flash": {
+      "type": "flash-deals",
+      "settings": {}
+    },
+    "best": {
+      "type": "bestsellers",
+      "settings": {}
+    },
+    "offers": {
+      "type": "bank-offers",
+      "settings": {}
+    },
+    "reviews": {
+      "type": "reviews",
+      "settings": {}
+    },
+    "trust": {
+      "type": "trust-strip",
+      "settings": {}
+    }
+  },
+  "order": [
+    "banners",
+    "cats",
+    "flash",
+    "best",
+    "offers",
+    "reviews",
+    "trust"
+  ]
+}

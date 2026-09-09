@@ -1,0 +1,45 @@
+
+<section class="featured-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Featured Products & Tools</h2>
+      <p class="section-desc">Hand-picked bestsellers ready for instant access and nationwide delivery.</p>
+    </div>
+    <div class="product-grid">
+      {% for product in collections.all.products limit: 8 %}
+        <div class="product-card">
+          <div class="product-image-wrap">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy">
+            {% else %}
+              <div class="product-image-placeholder">Digital Product</div>
+            {% endif %}
+            <span class="product-badge">Best Seller</span>
+          </div>
+          <div class="product-info">
+            <span class="product-vendor">{{ product.vendor }}</span>
+            <h3 class="product-title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+            <div class="product-price">
+              <span class="price-current">{{ product.price | money }}</span>
+              {% if product.compare_at_price > product.price %}
+                <span class="price-compare">{{ product.compare_at_price | money }}</span>
+              {% endif %}
+            </div>
+            <a href="{{ product.url }}" class="btn btn-card">View Details</a>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p>Products are syncing automatically via AutoPublisher AI Engine.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,15 @@
+
+<section class="nl">
+  <div class="container nl__inner">
+    <div><h2>Join 50,000+ Smart Shoppers</h2><p>Exclusive deals, new product alerts & free digital tools.</p></div>
+    <div class="nl__form">
+      {% form 'customer' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="nl-row"><input type="email" name="contact[email]" placeholder="Enter your email" required><button type="submit" class="btn btn-glow">Subscribe Free</button></div>
+      {% endform %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Newsletter","settings":[]}
+{% endschema %}

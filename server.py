@@ -573,6 +573,81 @@ def publish_to_shopify(
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+# ---------------------------------------------------------
+# SHOPIFY OAUTH INSTALL & CALLBACK (Token Generator)
+# ---------------------------------------------------------
+@app.get("/api/shopify/install", tags=["Shopify OAuth"])
+def shopify_install():
+    """Redirects user to Shopify OAuth install page with all permissions."""
+    import os
+    client_id = os.getenv("SHOPIFY_CLIENT_ID", "5cb7d1c711c432d9e728663294b92ded")
+    shop = os.getenv("SHOPIFY_SHOP_DOMAIN", "digiknowora.myshopify.com")
+    scopes = "write_products,read_products,write_orders,read_orders,write_customers,read_customers,write_content,read_content,write_themes,read_themes,write_inventory,read_inventory,write_discounts,read_discounts,write_files,read_files"
+    redirect_uri = "https://auto-publish-agents.vercel.app/api/shopify/callback"
+    install_url = f"https://{shop}/admin/oauth/authorize?client_id={client_id}&scope={scopes}&redirect_uri={redirect_uri}"
+    from starlette.responses import RedirectResponse
+    return RedirectResponse(url=install_url)
+
+@app.get("/api/shopify/callback", tags=["Shopify OAuth"])
+def shopify_callback(code: str = None, shop: str = None, hmac: str = None):
+    """
+    OAuth callback. Shopify redirects here with auth code after Install.
+    Exchanges the code for a permanent shpat_ access token.
+    """
+    import os
+    if not code or not shop:
+        from starlette.responses import HTMLResponse
+        return HTMLResponse("<h1>Error: Missing code or shop parameter</h1>")
+
+    client_id = os.getenv("SHOPIFY_CLIENT_ID", "")
+    client_secret = os.getenv("SHOPIFY_CLIENT_SECRET", "")
+
+    # Exchange auth code for permanent access token
+    token_url = f"https://{shop}/admin/oauth/access_token"
+    payload = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "code": code
+    }
+
+    import requests as req
+    r = req.post(token_url, json=payload, timeout=15)
+
+    from starlette.responses import HTMLResponse
+    if r.status_code == 200:
+        data = r.json()
+        access_token = data.get("access_token", "")
+        scope = data.get("scope", "")
+        html = f"""
+        <html><body style="font-family:Arial;text-align:center;padding:50px;background:#1a1a2e;color:#fff;">
+        <h1 style="color:#00ff88;">✅ SUCCESS! Shopify API Token Generated!</h1>
+        <div style="background:#16213e;padding:30px;border-radius:15px;margin:20px auto;max-width:600px;">
+            <h3>Your Admin API Access Token:</h3>
+            <input type="text" value="{access_token}" id="token" readonly
+                   style="width:100%;padding:15px;font-size:16px;border-radius:8px;border:none;background:#0f3460;color:#e94560;font-weight:bold;text-align:center;">
+            <br><br>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('token').value);this.textContent='Copied!'"
+                    style="padding:15px 40px;font-size:18px;background:#00ff88;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">
+                📋 Copy Token
+            </button>
+            <p style="margin-top:20px;color:#aaa;">Scope: {scope}</p>
+            <p style="color:#aaa;">Shop: {shop}</p>
+        </div>
+        <p style="color:#e94560;">⚠ Save this token NOW! It won't be shown again.</p>
+        </body></html>
+        """
+        return HTMLResponse(html)
+    else:
+        html = f"""
+        <html><body style="font-family:Arial;text-align:center;padding:50px;">
+        <h1 style="color:red;">❌ Token Exchange Failed</h1>
+        <p>Status: {r.status_code}</p>
+        <pre>{r.text}</pre>
+        </body></html>
+        """
+        return HTMLResponse(html)
+
+
 if __name__ == "__main__":
     import uvicorn
     print("Starting Auto-Publisher Webhook Server on port 8000...")

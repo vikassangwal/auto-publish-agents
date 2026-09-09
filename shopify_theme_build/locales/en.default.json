@@ -1,0 +1,13 @@
+{
+  "general": {
+    "title": "Digital KnowOra",
+    "cart": "Cart",
+    "checkout": "Checkout",
+    "search": "Search products"
+  },
+  "sections": {
+    "featured_collection": {
+      "view_all": "View All Products"
+    }
+  }
+}

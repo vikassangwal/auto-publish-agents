@@ -1,0 +1,60 @@
+
+<section class="swipe-sec">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <span class="sec-tag">{{ section.settings.tag | default: "TRENDING NOW" }}</span>
+        <h2 class="sec-title">{{ section.settings.title | default: "Swipe to Explore" }}</h2>
+      </div>
+      <a href="/collections/all" class="view-all-link">View All &#x2192;</a>
+    </div>
+    <div class="swipe-track">
+      {% for product in collections.all.products limit: 12 %}
+      <div class="swipe-card">
+        <div class="swipe-card__img">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 500 }}" alt="{{ product.title | escape }}" loading="lazy">
+          {% else %}
+            <div class="img-placeholder">&#x1F4E6;</div>
+          {% endif %}
+          {% if product.compare_at_price > product.price %}
+            {% assign disc = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+            <span class="sale-tag">-{{ disc }}% OFF</span>
+          {% endif %}
+          <div class="swipe-card__overlay">
+            <a href="{{ product.url }}" class="overlay-btn">View Details</a>
+          </div>
+        </div>
+        <div class="swipe-card__info">
+          <div class="card-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605; <span class="star-count">({{ product.id | modulo: 50 | plus: 120 }})</span></div>
+          <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+          <div class="card-price">
+            <span class="c-now">{{ product.price | money }}</span>
+            {% if product.compare_at_price > product.price %}
+              <span class="c-was">{{ product.compare_at_price | money }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+        <div class="swipe-card empty-card">
+          <p>&#x1F680; Products syncing via AI Engine...</p>
+        </div>
+      {% endfor %}
+    </div>
+    <!-- Swipe Arrows -->
+    <div class="swipe-arrows">
+      <button class="sw-arrow sw-left" onclick="this.closest('.swipe-sec').querySelector('.swipe-track').scrollBy({left:-300,behavior:'smooth'})" aria-label="Previous">&#x2190;</button>
+      <button class="sw-arrow sw-right" onclick="this.closest('.swipe-sec').querySelector('.swipe-track').scrollBy({left:300,behavior:'smooth'})" aria-label="Next">&#x2192;</button>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Swipe Carousel",
+  "settings": [
+    {"type":"text","id":"tag","label":"Section Tag","default":"TRENDING NOW"},
+    {"type":"text","id":"title","label":"Section Title","default":"Swipe to Explore"}
+  ]
+}
+{% endschema %}

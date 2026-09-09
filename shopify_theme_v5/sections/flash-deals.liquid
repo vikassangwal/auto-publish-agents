@@ -1,0 +1,50 @@
+
+<section class="flash">
+  <div class="container">
+    <div class="flash__head">
+      <div class="flash__left">
+        <h2 class="flash__title">&#x26A1; Flash Deals</h2>
+        <div class="flash__timer">
+          <span>Ends in</span>
+          <div class="ft-box"><span id="fh">23</span>h</div>
+          <div class="ft-box"><span id="fm">45</span>m</div>
+          <div class="ft-box"><span id="fs">59</span>s</div>
+        </div>
+      </div>
+      <a href="/collections/all" class="view-all">View All &#x203A;</a>
+    </div>
+    <div class="flash__track">
+      {% for product in collections.all.products limit: 10 %}
+      <a href="{{ product.url }}" class="deal-card">
+        <div class="deal-card__img">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+          {% else %}
+            <div class="deal-placeholder">&#x1F4E6;</div>
+          {% endif %}
+          {% if product.compare_at_price > product.price %}
+            {% assign off = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+            <span class="deal-off">{{ off }}% OFF</span>
+          {% endif %}
+        </div>
+        <div class="deal-card__info">
+          <h4>{{ product.title | truncate: 40 }}</h4>
+          <div class="deal-price">
+            <span class="dp-now">{{ product.price | money }}</span>
+            {% if product.compare_at_price > product.price %}
+              <span class="dp-was">{{ product.compare_at_price | money }}</span>
+            {% endif %}
+          </div>
+          <div class="deal-rating">&#x2605; 4.{{ product.id | modulo: 5 | plus: 5 }} <span>({{ product.id | modulo: 200 | plus: 50 }})</span></div>
+          <div class="deal-delivery">&#x1F69A; Free Delivery</div>
+        </div>
+      </a>
+      {% else %}
+      <div class="deal-card deal-empty"><p>&#x1F680; Products loading via AI Engine...</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Flash Deals","settings":[]}
+{% endschema %}

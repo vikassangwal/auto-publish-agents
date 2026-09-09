@@ -551,12 +551,20 @@ def publish_to_shopify(
     price_inr: float,
     compare_at_price: float = None,
     tags: str = "Dropshipping, Trending",
-    vendor: str = "Digital KnowOra"
+    vendor: str = "Digital KnowOra",
+    image_url: str = None,
+    file_path: str = None
 ):
     """
     Publishes a winning dropshipping or digital product directly to Shopify store catalog.
+    Guarantees deliverable file and main mockup image always exist automatically!
     """
     try:
+        from core.auto_asset_builder import AutoAssetBuilder
+        builder = AutoAssetBuilder()
+        verified_file = builder.ensure_deliverable_file(title=title, existing_path=file_path)
+        verified_image = builder.ensure_main_image(title=title, existing_url=image_url)
+
         from connectors.shopify import ShopifyConnector
         connector = ShopifyConnector()
         tag_list = [t.strip() for t in tags.split(",") if t.strip()]
@@ -567,8 +575,11 @@ def publish_to_shopify(
             compare_at_price=compare_at_price,
             tags=tag_list,
             vendor=vendor,
+            image_url=verified_image,
             status="active"
         )
+        result["deliverable_file"] = verified_file
+        result["main_image"] = verified_image
         return result
     except Exception as e:
         return {"success": False, "error": str(e)}

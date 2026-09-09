@@ -59,6 +59,7 @@ class ShopifyConnector(PlatformConnector):
         compare_at_price: Optional[float] = None,
         tags: Optional[List[str]] = None,
         images: Optional[List[Dict[str, str]]] = None,
+        image_url: Optional[str] = None,
         product_type: str = "Dropshipping",
         vendor: str = "Digital KnowOra",
         status: str = "active"
@@ -82,7 +83,9 @@ class ShopifyConnector(PlatformConnector):
                 "variants": [variant_data]
             }
         }
-        if images:
+        if image_url:
+            product_payload["product"]["images"] = [{"src": image_url}]
+        elif images:
             product_payload["product"]["images"] = images
 
         res = requests.post(url, headers=self._get_headers(), json=product_payload, timeout=20)

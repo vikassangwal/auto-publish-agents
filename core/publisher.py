@@ -24,6 +24,21 @@ class PublisherOrchestrator:
         self.browser_runner = ZeroApiBrowserRunner() if no_api else None
         self.multi_site_manager = MultiSiteManager()
         self.gate = ApprovalGate(auto_approve=auto_approve)
+        
+        # Self-Healing Asset Resolver: Ensures file and image always exist!
+        from core.auto_asset_builder import AutoAssetBuilder
+        builder = AutoAssetBuilder()
+        self.product.deliverable_path = builder.ensure_deliverable_file(
+            title=self.product.title,
+            category=self.product.category,
+            existing_path=self.product.deliverable_path
+        )
+        self.product.thumbnail_url = builder.ensure_main_image(
+            title=self.product.title,
+            category=self.product.category,
+            existing_url=self.product.thumbnail_url
+        )
+        
         self.connectors: List[PlatformConnector] = []
         self._initialize_connectors()
 

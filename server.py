@@ -431,20 +431,36 @@ def publish_digital_product(req: PublishRequest):
             gen = ProductGenerator()
             product_path = gen.generate_product(req.prompt, asset_type=req.format_type)
         elif req.product_file:
-            product_path = Path(req.product_file)
-            if not product_path.is_absolute():
-                repo_file = Path(__file__).resolve().parent / req.product_file
-                product_path = repo_file if repo_file.exists() else Path(req.product_file)
+            # Check if product_file is actually a prompt or excessively long instruction
+            raw_file_str = str(req.product_file).strip()
+            if len(raw_file_str) > 100 or "\n" in raw_file_str or " " in raw_file_str[:30]:
+                print(f"[PATH SANITIZER] Received long text instead of path: '{raw_file_str[:50]}...'. Generating clean asset...")
+                from core.auto_asset_builder import AutoAssetBuilder
+                builder = AutoAssetBuilder()
+                clean_title = raw_file_str[:60].replace("\n", " ").strip()
+                generated_path = builder.ensure_deliverable_file(title=clean_title, category="Finance")
+                product_path = Path(generated_path)
+            else:
+                product_path = Path(raw_file_str)
+                if not product_path.is_absolute():
+                    repo_file = Path(__file__).resolve().parent / raw_file_str
+                    product_path = repo_file if repo_file.exists() else Path(raw_file_str)
         else:
             product_path = Path(__file__).resolve().parent / "Ultimate_Investment_Portfolio_Tracker_Pro.xlsx"
 
-        # Auto-detect and self-heal missing/virtual /mnt/data paths
-        if not product_path.exists():
-            print(f"[VIRTUAL RESOLVER] Path {product_path} not found locally. Auto-generating real deliverable file...")
+        # Auto-detect and self-heal missing/virtual /mnt/data paths safely
+        try:
+            path_exists = product_path.exists()
+        except Exception:
+            path_exists = False
+
+        if not path_exists:
+            print(f"[VIRTUAL RESOLVER] Path {product_path} not found or invalid. Auto-generating real deliverable file...")
             from core.auto_asset_builder import AutoAssetBuilder
             builder = AutoAssetBuilder()
+            clean_name = getattr(product_path, "stem", "Digital Product")[:40].replace("_", " ")
             generated_path = builder.ensure_deliverable_file(
-                title=product_path.stem.replace("_", " "),
+                title=clean_name,
                 category="Finance"
             )
             product_path = Path(generated_path)

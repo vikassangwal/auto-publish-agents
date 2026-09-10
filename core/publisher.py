@@ -47,7 +47,14 @@ class PublisherOrchestrator:
         self._initialize_connectors()
 
     def _initialize_connectors(self):
-        # 1. High Priority Direct Creator Storefronts
+        # 1. Official Shopify Storefront
+        try:
+            from connectors.shopify import ShopifyConnector
+            self.connectors.append(ShopifyConnector())
+        except Exception:
+            pass
+
+        # 2. High Priority Direct Creator Storefronts
         self.connectors.append(GumroadConnector())
         self.connectors.append(LemonSqueezyConnector())
         self.connectors.append(MarketplaceConnector("Payhip", mode="api_or_browser"))

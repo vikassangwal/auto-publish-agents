@@ -28,16 +28,20 @@ class PublisherOrchestrator:
         # Self-Healing Asset Resolver: Ensures file and image always exist!
         from core.auto_asset_builder import AutoAssetBuilder
         builder = AutoAssetBuilder()
-        self.product.deliverable_path = builder.ensure_deliverable_file(
+        prod_cat = getattr(self.product, "product_type", "Finance")
+        current_path = getattr(self.product, "file_path", None)
+        valid_file = builder.ensure_deliverable_file(
             title=self.product.title,
-            category=self.product.category,
-            existing_path=self.product.deliverable_path
+            category=prod_cat,
+            existing_path=current_path
         )
-        self.product.thumbnail_url = builder.ensure_main_image(
+        self.product.file_path = valid_file
+        self.product.bundle_zip_path = valid_file
+        setattr(self.product, "thumbnail_url", builder.ensure_main_image(
             title=self.product.title,
-            category=self.product.category,
-            existing_url=self.product.thumbnail_url
-        )
+            category=prod_cat,
+            existing_url=getattr(self.product, "thumbnail_url", None)
+        ))
         
         self.connectors: List[PlatformConnector] = []
         self._initialize_connectors()

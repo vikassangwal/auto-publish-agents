@@ -10,11 +10,17 @@ import os
 from pathlib import Path
 from typing import Tuple
 
+import tempfile
+
 class AutoAssetBuilder:
     def __init__(self):
-        self.project_root = Path(r"C:\Users\HP\.gemini\antigravity\scratch\digital_product_autopublisher_agent")
-        self.assets_dir = self.project_root / "storage" / "generated_assets"
-        self.assets_dir.mkdir(parents=True, exist_ok=True)
+        # Use tempfile directory (/tmp on Vercel/Linux, AppData/Local/Temp on Windows)
+        # to guarantee read-write access in serverless cloud environments
+        self.assets_dir = Path(tempfile.gettempdir()) / "generated_assets"
+        try:
+            self.assets_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            self.assets_dir = Path(tempfile.gettempdir())
 
     def ensure_deliverable_file(self, title: str, category: str = "Finance", existing_path: str = None) -> str:
         """

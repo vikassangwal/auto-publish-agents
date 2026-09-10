@@ -63,15 +63,14 @@ class PublishReporter:
 
         report_content = "\n".join(md_lines)
 
-        # Write files
-        md_path = self.output_dir / "latest_publishing_report.md"
-        json_path = self.output_dir / "latest_publishing_report.json"
-
-        md_path.write_text(report_content, encoding="utf-8")
-        json_path.write_text(json.dumps(json_records, indent=2, ensure_ascii=False), encoding="utf-8")
-
-        print(f"\nReports saved successfully:")
-        print(f" - Markdown: {md_path}")
-        print(f" - JSON    : {json_path}")
+        # Write files safely
+        try:
+            md_path = self.output_dir / "latest_publishing_report.md"
+            json_path = self.output_dir / "latest_publishing_report.json"
+            md_path.write_text(report_content, encoding="utf-8")
+            json_path.write_text(json.dumps(json_records, indent=2, ensure_ascii=False), encoding="utf-8")
+            print(f"\nReports saved successfully to: {md_path}")
+        except Exception as e:
+            print(f"[REPORTER NOTICE] File write notice: {e}")
 
         return report_content
